@@ -22,47 +22,41 @@ import com.aondepet.ui.control.PetViewModel
 
 @Composable
 fun Conta(navController: NavController, viewModel: PetViewModel){
-    if (this) {
-        navController.navigate("login")
-    } else {
-
-            Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 8.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            IconButton(
+                onClick = { navController.popBackStack() },
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .align(Alignment.CenterVertically)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.chevron_left),
-                            contentDescription = "Icone seta voltar",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                } // Row icones topo
+                Icon(
+                    painter = painterResource(R.drawable.chevron_left),
+                    contentDescription = "Icone seta voltar",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        } // Row icones topo
 
-                Row(
-                    modifier = Modifier
-                        .padding(horizontal = 8.dp, vertical = 16.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
 
 
-                }
-            } // Fim Column Principal
-
-    }
+        }
+    } // Fim Column Principal
 }

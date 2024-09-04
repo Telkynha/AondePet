@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +43,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aondepet.R
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.models.Animal
+import com.aondepet.ui.models.Genero
+import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
 
 @Composable
@@ -147,22 +151,22 @@ fun PostFormulario(navController: NavController, viewModel: PetViewModel){
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     DropdownSelector(
-                        label = "Animal",
+                        label = "",
                         options = Animal.entries,
-                        selectedOption = animal,
-                        onOptionSelected = { petViewModel.onAnimalChange(it) }
+                        selectedOption = "",
+                        onOptionSelected = { it }
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     DropdownSelector(
                         label = "Genero",
                         options = Genero.entries,
-                        selectedOption = genero,
-                        onOptionSelected = { petViewModel.onGeneroChange(it) }
+                        selectedOption = "genero",
+                        onOptionSelected = { it }
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
-                        value = peso,
-                        onValueChange = { petViewModel.onPesoChange(it) },
+                        value = "",
+                        onValueChange = { it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
@@ -174,8 +178,8 @@ fun PostFormulario(navController: NavController, viewModel: PetViewModel){
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
-                        value = raca,
-                        onValueChange = { petViewModel.onRacaChange(it) },
+                        value = "",
+                        onValueChange = { it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
@@ -189,13 +193,13 @@ fun PostFormulario(navController: NavController, viewModel: PetViewModel){
                     DropdownSelector(
                         label = "Porte",
                         options = Porte.entries,
-                        selectedOption = porte,
-                        onOptionSelected = { petViewModel.onPorteChange(it) }
+                        selectedOption = "",
+                        onOptionSelected = { it }
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     OutlinedTextField(
-                        value = idade,
-                        onValueChange = { petViewModel.onIdadeChange(it) },
+                        value = "idade",
+                        onValueChange = { it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
@@ -239,11 +243,11 @@ fun PostFormulario(navController: NavController, viewModel: PetViewModel){
                     horizontalArrangement = Arrangement.Center
                 ) {
                     TextField(
-                        value = descricao,
+                        value = "descricao",
                         modifier = Modifier
                             .background(Color.Transparent)
                             .fillMaxWidth(),
-                        onValueChange = { petViewModel.onDescricaoChange(it) }
+                        onValueChange = { it }
                     )
                 }
             } //Coluna para ajeitar descrição
@@ -279,8 +283,8 @@ fun PostFormulario(navController: NavController, viewModel: PetViewModel){
                         .fillMaxWidth(),
                 ) {
                     OutlinedTextField(
-                        value = email,
-                        onValueChange = { petViewModel.onEmailChange(it) },
+                        value = "",
+                        onValueChange = { it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
@@ -297,8 +301,8 @@ fun PostFormulario(navController: NavController, viewModel: PetViewModel){
                         .fillMaxWidth(),
                 ) {
                     OutlinedTextField(
-                        value = telefone,
-                        onValueChange = { petViewModel.onTelefoneChange(it) },
+                        value = "",
+                        onValueChange = { it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
                             Text(
