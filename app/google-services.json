@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "649194832535",
+    "project_id": "aondepet-38f32",
+    "storage_bucket": "aondepet-38f32.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:649194832535:android:c66c315b159c3d7a551fd2",
+        "android_client_info": {
+          "package_name": "com.aondepet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBauy9t4-I5Ta386qceISp-TayEngqvh2Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
