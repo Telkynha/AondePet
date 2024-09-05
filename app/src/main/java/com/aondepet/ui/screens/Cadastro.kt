@@ -1,5 +1,6 @@
 package com.aondepet.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +19,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -27,10 +35,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aondepet.R
+import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
 
 @Composable
 fun Cadastro(navController: NavController, viewModel: PetViewModel){
+
+    var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+    var confirmarSenha by remember { mutableStateOf("") }
+    var nome by remember { mutableStateOf("") }
+
+    val authState = viewModel.authState.observeAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(authState.value) {
+        when(authState.value) {
+            is AuthState.Authenticated -> navController.navigate("principal")
+            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT).show()
+            else -> Unit
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -86,8 +112,8 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel){
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { it },
+                    value = nome,
+                    onValueChange = { nome = it },
                     label = { Text("Nome", color = MaterialTheme.colorScheme.onSurface) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -97,8 +123,8 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel){
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { it },
+                    value = email,
+                    onValueChange = { email = it },
                     label = { Text("Email", color = MaterialTheme.colorScheme.onSurface) },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -108,8 +134,8 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel){
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { it },
+                    value = senha,
+                    onValueChange = { senha = it },
                     label = { Text("Senha", color = MaterialTheme.colorScheme.onSurface) },
                     visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -120,8 +146,8 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel){
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { it },
+                    value = confirmarSenha,
+                    onValueChange = { confirmarSenha = it },
                     label = { Text("Repita a senha", color = MaterialTheme.colorScheme.onSurface) },
                     visualTransformation = PasswordVisualTransformation(),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -134,7 +160,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel){
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
                     onClick = {
-
+                        viewModel.registrar(email, senha, confirmarSenha)
                     },
                     modifier = Modifier
                         .width(150.dp)

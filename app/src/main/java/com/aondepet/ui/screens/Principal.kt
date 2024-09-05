@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +28,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +43,7 @@ import com.aondepet.ui.control.PetViewModel
 
 @Composable
 fun Principal(navController: NavController, viewModel: PetViewModel) {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +74,8 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Icone menu",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
                 )
             }
         } // Row icones topo
@@ -207,7 +211,8 @@ fun CardPet() {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "Icone favoritar animal",
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             } // Row icone gênero e Coração

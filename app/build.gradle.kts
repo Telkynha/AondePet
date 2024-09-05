@@ -51,7 +51,6 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material:material-icons-extended:1.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -63,6 +62,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
