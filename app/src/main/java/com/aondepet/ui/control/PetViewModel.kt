@@ -8,7 +8,6 @@ import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.QuerySnapshot
 
 class PetViewModel : ViewModel() {
     private val authRepository = FirebaseAuthRepository()
@@ -16,6 +15,9 @@ class PetViewModel : ViewModel() {
 
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
+
+    private val _userId = MutableLiveData<String?>()
+    val userId: LiveData<String?> get() = _userId
 
     private val _petData = MutableLiveData<Pet>()
     val petData: LiveData<Pet> get() = _petData
@@ -36,23 +38,34 @@ class PetViewModel : ViewModel() {
     }
 
     fun checkAuthState() {
-        _authState.value = if (authRepository.checkAuthState()) {
-            AuthState.Authenticated
+        if (authRepository.checkAuthState()) {
+            _authState.value = AuthState.Authenticated
+            _userId.value = authRepository.currentUserId
         } else {
-            AuthState.Unauthenticated
+            _authState.value = AuthState.Unauthenticated
+            _userId.value = null
         }
     }
 
     // ========== METODOS - AUTENTICAÇÃO LOGIN/REGISTRO ==========
 
-    val userId = authRepository.currentUserId
+    fun setUserId(id: String?) {
+        _userId.value = id
+    }
+
+    fun clearUserId() {
+        _userId.value = null
+    }
 
     fun login(email: String, senha: String) {
         _authState.value = AuthState.Loading
         authRepository.login(
             email,
             senha,
-            onSuccess = { _authState.value = AuthState.Authenticated },
+            onSuccess = {
+                _authState.value = AuthState.Authenticated
+                _userId.value = authRepository.currentUserId
+            },
             onFailure = { _authState.value = AuthState.Error(it) }
         )
     }
@@ -60,6 +73,7 @@ class PetViewModel : ViewModel() {
     fun logout() {
         authRepository.logout {
             _authState.value = AuthState.Unauthenticated
+            _userId.value = null
         }
     }
 
@@ -69,18 +83,20 @@ class PetViewModel : ViewModel() {
             email,
             senha,
             confirmarSenha,
-            onSuccess = {
+            onSuccess = { userId ->
                 _authState.value = AuthState.Authenticated
-                addConta(Conta(nome = nome, email = email, senha = senha))
-                },
+                _userId.value = userId.toString()
+                val conta = Conta(nome = nome, email = email, senha = senha, id = userId.toString())
+                addConta(userId.toString(), conta) // Use o userId do Firebase Authentication
+            },
             onFailure = { _authState.value = AuthState.Error(it) }
         )
     }
 
     // ========== METODOS - CONTA ==========
 
-    fun addConta(conta: Conta) {
-        firestoreRepository.addConta(conta)
+    fun addConta(contaId: String, conta: Conta) {
+        firestoreRepository.addConta(contaId, conta)
     }
 
     fun updateConta(contaId: String, updatedConta: Conta) {
@@ -88,25 +104,53 @@ class PetViewModel : ViewModel() {
     }
 
     fun deleteConta() {
-        firestoreRepository.deleteConta(userId!!)
+        _userId.value?.let {
+            firestoreRepository.deleteConta(it)
+        }
     }
 
-    fun getContaById(): Task<DocumentSnapshot> {
-        return firestoreRepository.getContaById(userId!!)
+    fun getNomeContaById(): Task<DocumentSnapshot> {
+        return _userId.value?.let {
+            firestoreRepository.getNomeContaById(it)
+        } ?: throw IllegalStateException("UserId vazio")
     }
 
     // ========== METODOS - PET ==========
 
     fun addPet(pet: Pet) {
         firestoreRepository.addPet(pet)
-        fetchPets()
+            .addOnSuccessListener {
+                fetchPets() // Atualiza a lista de pets após adicionar
+            }
+            .addOnFailureListener { e ->
+                _errorMessage.value = e.message
+            }
     }
 
     fun fetchPets() {
-        firestoreRepository.getPets().addOnSuccessListener { querySnapshot ->
-            val petList = querySnapshot.toObjects(Pet::class.java)
-            _pets.value = petList
-        }
+        firestoreRepository.getPets()
+            .addOnSuccessListener { querySnapshot ->
+                val petList = querySnapshot.toObjects(Pet::class.java)
+                _pets.value = petList
+            }
+            .addOnFailureListener { e ->
+                _errorMessage.value = e.message
+            }
+    }
+
+    fun getPetById(petId: String): Task<DocumentSnapshot> {
+        return firestoreRepository.getPetById(petId)
+            .addOnSuccessListener { document ->
+                val pet = document.toObject(Pet::class.java)
+                if (pet != null) {
+                    _petData.value = pet!!
+                } else {
+                    _errorMessage.value = "Pet não encontrado"
+                }
+            }
+            .addOnFailureListener { e ->
+                _errorMessage.value = e.message
+            }
     }
 
     fun getPets() = firestoreRepository.getPets()
@@ -131,11 +175,6 @@ class PetViewModel : ViewModel() {
                 _errorMessage.value = exception.message
             }
     }
-
-    fun getPetById(petId: String): Task<DocumentSnapshot> {
-       return firestoreRepository.getPetById(petId)
-    }
-
 }
 
 sealed class AuthState{

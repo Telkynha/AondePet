@@ -58,7 +58,7 @@ fun Conta(navController: NavController, viewModel: PetViewModel){
                     .align(Alignment.CenterVertically)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.chevron_left),
+                    painter = painterResource(R.drawable.arrow_back),
                     contentDescription = "Icone seta voltar",
                     tint = MaterialTheme.colorScheme.primary
                 )

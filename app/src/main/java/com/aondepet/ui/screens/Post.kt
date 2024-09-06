@@ -99,7 +99,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     .align(Alignment.CenterVertically)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.chevron_left),
+                    painter = painterResource(R.drawable.arrow_back),
                     contentDescription = "Icone seta voltar",
                     tint = MaterialTheme.colorScheme.primary
                 )

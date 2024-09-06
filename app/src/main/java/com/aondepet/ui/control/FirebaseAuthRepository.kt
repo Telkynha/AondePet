@@ -1,6 +1,5 @@
 package com.aondepet.ui.control
 
-import com.aondepet.ui.models.Conta
 import com.google.firebase.auth.FirebaseAuth
 
 class FirebaseAuthRepository {
@@ -24,7 +23,7 @@ class FirebaseAuthRepository {
         onSuccess()
     }
 
-    fun registrar(email: String, senha: String, confirmarSenha: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+    fun registrar(email: String, senha: String, confirmarSenha: String, onSuccess: (Any?) -> Unit, onFailure: (String) -> Unit) {
         if (email.isEmpty() || senha.isEmpty()) {
             onFailure("Preencha todos os campos")
             return
@@ -34,7 +33,10 @@ class FirebaseAuthRepository {
             return
         }
         auth.createUserWithEmailAndPassword(email, senha)
-            .addOnSuccessListener { onSuccess() }
+            .addOnSuccessListener {
+                val userId = auth.currentUser?.uid
+                onSuccess(userId)
+            }
             .addOnFailureListener { onFailure(it.message ?: "Erro desconhecido") }
     }
 

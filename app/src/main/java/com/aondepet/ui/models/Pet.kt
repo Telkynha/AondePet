@@ -11,7 +11,7 @@ data class Pet(
     val status: Status = Status.ADOTADO,
     val nome: String = "",
     val descricao: String = "",
-    val conta: Conta = Conta(),
+    val conta: String = "",
     val email: String = "",
     val telefone: String = "",
     val fotos: List<Foto> = emptyList()

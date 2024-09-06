@@ -1,5 +1,6 @@
 package com.aondepet.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -67,6 +69,8 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
     var animal by remember { mutableStateOf(Animal.CACHORRO) }
     var porte by remember { mutableStateOf(Porte.MEDIO) }
 
+    val userId by viewModel.userId.observeAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +88,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.chevron_left),
+                    painter = painterResource(R.drawable.arrow_back),
                     contentDescription = "Ícone seta voltar",
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -242,21 +246,23 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 
         Button(
             onClick = {
-                val pet = Pet(
-                    nome = nome,
-                    raca = raca,
-                    genero = genero,
-                    idade = idade.toIntOrNull() ?: 0,
-                    descricao = descricao,
-                    status = status,
-                    animal = animal,
-                    porte = porte,
-                    email = email,
-                    telefone = telefone
-                )
-                viewModel.addPet(pet)
-                navController.navigate("principal") {
-                    popUpTo("postFormularioNovo") { inclusive = true }
+                // Use userId as a String, handle nullability
+                if (userId != null) {
+                    val pet = Pet(
+                        nome = nome,
+                        raca = raca,
+                        genero = genero,
+                        idade = idade.toIntOrNull() ?: 0,
+                        descricao = descricao,
+                        status = status,
+                        animal = animal,
+                        porte = porte,
+                        email = email,
+                        telefone = telefone,
+                        conta = userId.toString() // Usando userId diretamente
+                    )
+                    viewModel.addPet(pet)
+                    navController.navigate("principal")
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -267,10 +273,9 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 }
 
 @Composable
-fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel) {
+fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel, petId: String? = "") {
 
     // Pet mockado
-    val petId = "9rF7OnKMb8upNZmbFbQC"
     var pet by remember { mutableStateOf<Pet?>(null) }
 
     var nome by remember { mutableStateOf("") }
@@ -284,8 +289,10 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel)
     var animal by remember { mutableStateOf(Animal.CACHORRO) }
     var porte by remember { mutableStateOf(Porte.MEDIO) }
 
+    val userId by viewModel.userId.observeAsState()
+
     LaunchedEffect(petId) {
-        viewModel.getPetById(petId).addOnSuccessListener { document ->
+        viewModel.getPetById(petId!!).addOnSuccessListener { document ->
             if (document != null && document.exists()) {
                 pet = document.toObject(Pet::class.java)
                 nome = pet?.nome ?: ""
@@ -319,7 +326,7 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel)
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.chevron_left),
+                    painter = painterResource(R.drawable.arrow_back),
                     contentDescription = "Ícone seta voltar",
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -477,24 +484,25 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel)
 
         Button(
             onClick = {
-                val pet = Pet(
-                    nome = nome,
-                    raca = raca,
-                    genero = genero,
-                    idade = idade.toIntOrNull() ?: 0,
-                    descricao = descricao,
-                    status = status,
-                    animal = animal,
-                    porte = porte,
-                    email = email,
-                    telefone = telefone
-                )
-                // Pet mockado para alterar
-                viewModel.updatePet(petId, pet)
-
-                navController.navigate("principal") {
-                    popUpTo("postFormularioAlterar") { inclusive = true }
+                val pet = userId?.let {
+                    Pet(
+                        nome = nome,
+                        raca = raca,
+                        genero = genero,
+                        idade = idade.toIntOrNull() ?: 0,
+                        descricao = descricao,
+                        status = status,
+                        animal = animal,
+                        porte = porte,
+                        email = email,
+                        telefone = telefone,
+                        conta = it
+                    )
                 }
+                // Pet mockado para alterar
+                pet?.let { viewModel.updatePet(petId!!, it) }
+
+                navController.navigate("principal")
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -508,7 +516,7 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel)
                 disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
             ),
             onClick = {
-                viewModel.deletePet(petId)
+                viewModel.deletePet(petId!!)
                 navController.navigate("principal") {
                     popUpTo("postFormularioAlterar") { inclusive = true }
                 }

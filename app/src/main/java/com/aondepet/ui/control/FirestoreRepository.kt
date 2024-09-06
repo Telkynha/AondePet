@@ -2,6 +2,7 @@ import android.net.Uri
 import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
@@ -13,20 +14,11 @@ class FirestoreRepository {
 
     // ========== METODOS - CONTA ==========
 
-    fun addConta(conta: Conta): Task<Void> {
-        val task = contasCollection.add(conta)
-        return task.continueWithTask{ taskResult ->
-            if(taskResult.isSuccessful){
-                val contaId = taskResult.result?.id
-                contaId?.let { updateConta(it, conta.copy(id = it)) }
-            } else {
-                throw taskResult.exception ?: Exception("Erro ao adicionar conta")
-            }
-        }
+    fun addConta(contaId: String, conta: Conta): Task<Void> {
+        return contasCollection.document(contaId).set(conta)
     }
 
     fun updateConta(contaId: String, updatedConta: Conta): Task<Void> {
-        updatedConta.id = contaId
         return contasCollection.document(contaId).set(updatedConta)
     }
 
@@ -34,7 +26,7 @@ class FirestoreRepository {
         return contasCollection.document(contaId).delete()
     }
 
-    fun getContaById(contaId: String): Task<DocumentSnapshot> {
+    fun getNomeContaById(contaId: String): Task<DocumentSnapshot> {
         return contasCollection.document(contaId).get()
     }
 
@@ -72,4 +64,5 @@ class FirestoreRepository {
     fun getPetById(petId: String): Task<DocumentSnapshot> {
         return petsCollection.document(petId).get()
     }
+
 }

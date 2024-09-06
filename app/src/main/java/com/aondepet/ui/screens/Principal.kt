@@ -3,7 +3,6 @@ package com.aondepet.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,17 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -46,22 +40,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.aondepet.R
+import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 
 @Composable
 fun Principal(navController: NavController, viewModel: PetViewModel) {
 
     val pets by viewModel.pets.observeAsState(emptyList())
+    val authState by viewModel.authState.observeAsState()
+    val userId by viewModel.userId.observeAsState()
 
-    Column(
+    Surface(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .height(80.dp)
+            .fillMaxWidth(),
+        color = MaterialTheme.colorScheme.primaryContainer
     ) {
         Row(
             modifier = Modifier
@@ -91,6 +88,13 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                 )
             }
         } // Row icones topo
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp, vertical = 8.dp, ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Row(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 16.dp)
@@ -103,6 +107,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                 onValueChange = { it },
                 label = { Text("Pesquisar", color = MaterialTheme.colorScheme.onSurface) },
                 modifier = Modifier
+                    .padding(top = 80.dp)
                     .fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -169,20 +174,17 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                 modifier = Modifier
                     .padding(start = 8.dp)
             )
-            Row() {
-                SmallFloatingActionButton(
-                    onClick = { navController.navigate("postFormularioNovo") },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Add, "Adicionar Post Pet")
-                }
-                SmallFloatingActionButton(
-                    onClick = { navController.navigate("postFormularioAlterar") },
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.secondary
-                ) {
-                    Icon(Icons.Filled.Create, "Alterar Post Pet")
+            if (authState == AuthState.Authenticated) {
+                Row {
+                    SmallFloatingActionButton(
+                        onClick = {
+                            navController.navigate("postFormularioNovo")
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(Icons.Filled.Add, "Adicionar Post Pet")
+                    }
                 }
             }
         }
@@ -190,6 +192,9 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
         LazyColumn {
             items(pets) { pet ->
                 CardPet(navController = navController, pet = pet)
+                if(pet.id == userId){
+                    userId?.let { CardPetUser(navController = navController, pet = pet, userId = it) }
+                }
             }
         }
     } // Fim da coluna
@@ -229,28 +234,104 @@ fun CardPet(navController: NavController, pet: Pet) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                val generoIcon = when (pet.genero) {
+                    Genero.MACHO -> R.drawable.male
+                    Genero.FEMEA -> R.drawable.female
+                    else -> R.drawable.question_mark
+                }
                 Icon(
-                    painter = painterResource(R.drawable.male),
-                    contentDescription = "Icone genero macho",
+                    painter = painterResource(generoIcon),
+                    contentDescription = "Ícone gênero",
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "${pet.nome}",
+                    text = pet.nome,
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 IconButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { /*TODO: Lógica para adicionar aos favoritos */ },
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "Icone favoritar animal",
+                        painter = painterResource(R.drawable.favorite),
+                        contentDescription = "Ícone favoritar animal",
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(24.dp)
                     )
+                }
+            }
+        } // Row icone gênero e Coração
+    } // Coluna com os itens do card
+    Spacer(modifier = Modifier.height(24.dp))
+}
+
+@Composable
+fun CardPetUser(navController: NavController, pet: Pet, userId: String) {
+
+    Surface(
+        onClick = { navController.navigate("post/${pet.id}") },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
+        shape = RoundedCornerShape(4.dp),
+        color = Color.Transparent
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img),
+                    contentDescription = "Imagem Pet",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(4.dp))
+                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+                )
+            } // Row com a imagem do pet
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val generoIcon = when (pet.genero) {
+                    Genero.MACHO -> R.drawable.male
+                    Genero.FEMEA -> R.drawable.female
+                    else -> R.drawable.question_mark
+                }
+                Icon(
+                    painter = painterResource(generoIcon),
+                    contentDescription = "Ícone gênero",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = pet.nome,
+                    fontSize = 20.sp,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                if (pet.conta == userId) {
+                    IconButton(
+                        onClick = { navController.navigate("postFormularioAlterar/${pet.id}") },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.edit),
+                            contentDescription = "Ícone alterar post animal",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
             } // Row icone gênero e Coração
         } // Coluna com os itens do card
