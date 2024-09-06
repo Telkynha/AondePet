@@ -45,6 +45,8 @@ class PetViewModel : ViewModel() {
 
     // ========== METODOS - AUTENTICAÇÃO LOGIN/REGISTRO ==========
 
+    val userId = authRepository.currentUserId
+
     fun login(email: String, senha: String) {
         _authState.value = AuthState.Loading
         authRepository.login(
@@ -67,9 +69,30 @@ class PetViewModel : ViewModel() {
             email,
             senha,
             confirmarSenha,
-            onSuccess = { _authState.value = AuthState.Authenticated },
+            onSuccess = {
+                _authState.value = AuthState.Authenticated
+                addConta(Conta(nome = nome, email = email, senha = senha))
+                },
             onFailure = { _authState.value = AuthState.Error(it) }
         )
+    }
+
+    // ========== METODOS - CONTA ==========
+
+    fun addConta(conta: Conta) {
+        firestoreRepository.addConta(conta)
+    }
+
+    fun updateConta(contaId: String, updatedConta: Conta) {
+        firestoreRepository.updateConta(contaId, updatedConta)
+    }
+
+    fun deleteConta() {
+        firestoreRepository.deleteConta(userId!!)
+    }
+
+    fun getContaById(): Task<DocumentSnapshot> {
+        return firestoreRepository.getContaById(userId!!)
     }
 
     // ========== METODOS - PET ==========

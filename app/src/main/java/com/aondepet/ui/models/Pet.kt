@@ -3,17 +3,17 @@ package com.aondepet.ui.models
 data class Pet(
     var id: String? = null,
     val animal: Animal = Animal.CACHORRO,
-    val raca: String = "Viralata",
+    val raca: String = "",
     val genero: Genero = Genero.MACHO,
     val porte: Porte = Porte.MEDIO,
-    val idade: Int = 2,
-    val localizacao: Localizacao = Localizacao("1", "Sao paulo", "Osasco"),
+    val idade: Int = 0,
+    val localizacao: Localizacao = Localizacao("", "", ""),
     val status: Status = Status.ADOTADO,
-    val nome: String = "Auau",
-    val descricao: String = "Teste",
+    val nome: String = "",
+    val descricao: String = "",
     val conta: Conta = Conta(),
-    val email: String = "email",
-    val telefone: String = "telefone",
+    val email: String = "",
+    val telefone: String = "",
     val fotos: List<Foto> = emptyList()
     // TO DO - Importar fotos da galeria e incluir no pet
 ) {

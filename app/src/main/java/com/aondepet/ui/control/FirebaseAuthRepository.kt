@@ -6,7 +6,8 @@ import com.google.firebase.auth.FirebaseAuth
 class FirebaseAuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    val currentUserEmail = auth.currentUser?.email
+    val currentUserId: String?
+        get() = auth.currentUser?.uid
 
     fun login(email: String, senha: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         if (email.isEmpty() || senha.isEmpty()) {

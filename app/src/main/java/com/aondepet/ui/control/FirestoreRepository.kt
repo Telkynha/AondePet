@@ -9,8 +9,36 @@ import com.google.firebase.firestore.QuerySnapshot
 class FirestoreRepository {
     private val db = FirebaseFirestore.getInstance()
     private val petsCollection = db.collection("pets")
+    private val contasCollection = db.collection("contas")
 
+    // ========== METODOS - CONTA ==========
 
+    fun addConta(conta: Conta): Task<Void> {
+        val task = contasCollection.add(conta)
+        return task.continueWithTask{ taskResult ->
+            if(taskResult.isSuccessful){
+                val contaId = taskResult.result?.id
+                contaId?.let { updateConta(it, conta.copy(id = it)) }
+            } else {
+                throw taskResult.exception ?: Exception("Erro ao adicionar conta")
+            }
+        }
+    }
+
+    fun updateConta(contaId: String, updatedConta: Conta): Task<Void> {
+        updatedConta.id = contaId
+        return contasCollection.document(contaId).set(updatedConta)
+    }
+
+    fun deleteConta(contaId: String): Task<Void> {
+        return contasCollection.document(contaId).delete()
+    }
+
+    fun getContaById(contaId: String): Task<DocumentSnapshot> {
+        return contasCollection.document(contaId).get()
+    }
+
+    // ========== METODOS - PET ==========
 
     fun addPet(pet: Pet): Task<Void> {
         val task = petsCollection.add(pet)
