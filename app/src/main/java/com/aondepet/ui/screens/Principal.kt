@@ -191,9 +191,10 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
             items(pets) { pet ->
-                CardPet(navController = navController, pet = pet)
-                if(pet.id == userId){
+                if(pet.conta == userId){
                     userId?.let { CardPetUser(navController = navController, pet = pet, userId = it) }
+                }else{
+                    CardPet(navController = navController, pet = pet)
                 }
             }
         }

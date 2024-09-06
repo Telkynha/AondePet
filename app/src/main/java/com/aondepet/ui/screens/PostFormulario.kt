@@ -161,11 +161,11 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     label = { Text("Raça", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = porte.toString(),
-                    onValueChange = { porte = Porte.valueOf(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Porte", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                DropdownSelector(
+                    label = "Porte",
+                    options = Porte.entries,
+                    selectedOption = porte,
+                    onOptionSelected = { porte = it }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
@@ -399,11 +399,11 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     label = { Text("Raça", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = porte.toString(),
-                    onValueChange = { porte = Porte.valueOf(it) },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Porte", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                DropdownSelector(
+                    label = "Porte",
+                    options = Porte.entries,
+                    selectedOption = porte,
+                    onOptionSelected = { porte = it }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
