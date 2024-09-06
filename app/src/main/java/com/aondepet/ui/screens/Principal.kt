@@ -3,6 +3,7 @@ package com.aondepet.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,11 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -25,9 +31,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,17 +46,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.aondepet.R
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.models.Pet
 
 @Composable
 fun Principal(navController: NavController, viewModel: PetViewModel) {
 
+    val pets by viewModel.pets.observeAsState(emptyList())
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = 8.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -143,25 +155,50 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
             }
         } // Row com os botões de filtro
         Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = "Pets",
-            fontSize = 22.sp,
-            color = MaterialTheme.colorScheme.primary,
+        Row(
             modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 8.dp)
-        )
+                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Pets",
+                fontSize = 22.sp,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .padding(start = 8.dp)
+            )
+            Row() {
+                SmallFloatingActionButton(
+                    onClick = { navController.navigate("postFormularioNovo") },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    Icon(Icons.Filled.Add, "Adicionar Post Pet")
+                }
+                SmallFloatingActionButton(
+                    onClick = { navController.navigate("postFormularioAlterar") },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.secondary
+                ) {
+                    Icon(Icons.Filled.Create, "Alterar Post Pet")
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
-        CardPet()
-        CardPet()
-        CardPet()
+        LazyColumn {
+            items(pets) { pet ->
+                CardPet(navController = navController, pet = pet)
+            }
+        }
     } // Fim da coluna
 }
 
 @Composable
-fun CardPet() {
+fun CardPet(navController: NavController, pet: Pet) {
     Surface(
-        onClick = { /*TODO*/ },
+        onClick = { navController.navigate("post/${pet.id}") },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
@@ -198,7 +235,7 @@ fun CardPet() {
                     tint = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = "Codigo: G000001",
+                    text = "${pet.nome}",
                     fontSize = 20.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.CenterVertically)

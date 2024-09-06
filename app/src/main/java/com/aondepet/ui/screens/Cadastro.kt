@@ -160,7 +160,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel){
                 Spacer(modifier = Modifier.height(32.dp))
                 Button(
                     onClick = {
-                        viewModel.registrar(email, senha, confirmarSenha)
+                        viewModel.registrar(email, senha, confirmarSenha, nome)
                     },
                     modifier = Modifier
                         .width(150.dp)

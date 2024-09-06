@@ -22,6 +22,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,9 +38,47 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aondepet.R
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.models.Animal
+import com.aondepet.ui.models.Genero
+import com.aondepet.ui.models.Pet
+import com.aondepet.ui.models.Porte
+import com.aondepet.ui.models.Status
 
 @Composable
-fun Post(navController: NavController, viewModel: PetViewModel){
+fun Post(navController: NavController, viewModel: PetViewModel, petId: String? = ""){
+
+    var pet by remember { mutableStateOf<Pet?>(null) }
+    var nome by remember { mutableStateOf("") }
+    var raca by remember { mutableStateOf("") }
+    var genero by remember { mutableStateOf(Genero.MACHO) }
+    var idade by remember { mutableStateOf("") }
+    var descricao by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var telefone by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf(Status.ADOTADO) }
+    var animal by remember { mutableStateOf(Animal.CACHORRO) }
+    var porte by remember { mutableStateOf(Porte.MEDIO) }
+
+    LaunchedEffect(petId) {
+        if (petId != null) {
+            viewModel.getPetById(petId).addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    pet = document.toObject(Pet::class.java)
+                    nome = pet?.nome ?: ""
+                    raca = pet?.raca ?: ""
+                    genero = pet?.genero ?: Genero.MACHO
+                    idade = pet?.idade?.toString()?: ""
+                    descricao = pet?.descricao ?: ""
+                    email = pet?.email ?: ""
+                    telefone = pet?.telefone ?: ""
+                    status = pet?.status ?: Status.ADOTADO
+                    animal = pet?.animal ?: Animal.CACHORRO
+                    porte = pet?.porte ?: Porte.MEDIO
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -90,12 +133,12 @@ fun Post(navController: NavController, viewModel: PetViewModel){
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Garfield",
+                text = "$nome",
                 fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Status: Perdido",
+                text = "Status: $status",
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -123,19 +166,13 @@ fun Post(navController: NavController, viewModel: PetViewModel){
                 contentDescription = "Icone genero macho",
                 tint = MaterialTheme.colorScheme.primary
             )
-            Text(
-                text = "Codigo: G000001",
-                fontSize = 20.sp,
-                modifier = Modifier.align(Alignment.CenterVertically),
-                color = MaterialTheme.colorScheme.onBackground
-            )
             IconButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Favorite,
+                    painter = painterResource(R.drawable.favorite),
                     contentDescription = "Icone favoritar animal",
                     tint = MaterialTheme.colorScheme.secondary
                 )
@@ -161,17 +198,12 @@ fun Post(navController: NavController, viewModel: PetViewModel){
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Animal: Gato",
+                        text = "Animal: $animal",
                         fontSize = 16.sp,
                         color = Color.White
                     )
                     Text(
-                        text = "Sexo: Macho",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Peso: 5kg",
+                        text = "Raça: $raca",
                         fontSize = 16.sp,
                         color = Color.White
                     )
@@ -182,17 +214,12 @@ fun Post(navController: NavController, viewModel: PetViewModel){
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Raça: Persa",
+                        text = "Porte: $porte",
                         fontSize = 16.sp,
                         color = Color.White
                     )
                     Text(
-                        text = "Porte: Médio",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Idade: 3 anos",
+                        text = "Idade: $idade anos",
                         fontSize = 16.sp,
                         color = Color.White
                     )
@@ -230,12 +257,7 @@ fun Post(navController: NavController, viewModel: PetViewModel){
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Texto descrevendo o que aconteceu - Lorem ipsum dolor sit amet, " +
-                                "consectetur adipiscing elit. Maecenas mattis eget massa sed " +
-                                "ultricies. Nulla facilisi. Cras fermentum, nunc ac laoreet " +
-                                "ultricies, ipsum nunc ultricies eros, sed tincidunt massa nunc ac" +
-                                " massa. Maecenas eget lacus eget nunc tincidunt laoreet. Maecenas " +
-                                "eget lacus eget nunc tincidunt laoreet.",
+                        text = "$descricao",
                         fontSize = 16.sp,
                         textAlign = TextAlign.Justify,
                         modifier = Modifier.padding(top = 8.dp),
@@ -275,7 +297,7 @@ fun Post(navController: NavController, viewModel: PetViewModel){
                         .fillMaxWidth(),
                 ) {
                     Text(
-                        text = "Email: Email@email.com",
+                        text = "Email: $email",
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -286,7 +308,7 @@ fun Post(navController: NavController, viewModel: PetViewModel){
                         .fillMaxWidth(),
                 ) {
                     Text(
-                        text = "Telefone: (11) 91234-5678",
+                        text = "Telefone: $telefone",
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )

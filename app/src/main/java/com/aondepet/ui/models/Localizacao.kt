@@ -1,6 +1,7 @@
 package com.aondepet.ui.models
 
-class Localizacao(
-    val estado: String,
-    val cidade: String
+data class Localizacao(
+    val id: String? = null,
+    val estado: String = "teste",
+    val cidade: String = "teste"
 ) {}

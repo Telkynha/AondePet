@@ -1,11 +1,12 @@
 package com.aondepet.ui.control
 
+import com.aondepet.ui.models.Conta
 import com.google.firebase.auth.FirebaseAuth
 
 class FirebaseAuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
-    val currentUser get() = auth.currentUser
+    val currentUserEmail = auth.currentUser?.email
 
     fun login(email: String, senha: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         if (email.isEmpty() || senha.isEmpty()) {

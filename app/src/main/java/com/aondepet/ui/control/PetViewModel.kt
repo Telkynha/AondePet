@@ -4,8 +4,10 @@ import FirestoreRepository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 
 class PetViewModel : ViewModel() {
@@ -15,8 +17,22 @@ class PetViewModel : ViewModel() {
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
 
+    private val _petData = MutableLiveData<Pet>()
+    val petData: LiveData<Pet> get() = _petData
+
+    private val _pets = MutableLiveData<List<Pet>>()
+    val pets: LiveData<List<Pet>> get() = _pets
+
+    private val _petsList = MutableLiveData<List<Pet>>()
+    val petsList: LiveData<List<Pet>> get() = _petsList
+
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
+
     init {
         checkAuthState()
+        fetchPets()
+        _petData.value = Pet()
     }
 
     fun checkAuthState() {
@@ -45,7 +61,7 @@ class PetViewModel : ViewModel() {
         }
     }
 
-    fun registrar(email: String, senha: String, confirmarSenha: String) {
+    fun registrar(email: String, senha: String, confirmarSenha: String, nome: String) {
         _authState.value = AuthState.Loading
         authRepository.registrar(
             email,
@@ -60,35 +76,42 @@ class PetViewModel : ViewModel() {
 
     fun addPet(pet: Pet) {
         firestoreRepository.addPet(pet)
+        fetchPets()
+    }
+
+    fun fetchPets() {
+        firestoreRepository.getPets().addOnSuccessListener { querySnapshot ->
+            val petList = querySnapshot.toObjects(Pet::class.java)
+            _pets.value = petList
+        }
     }
 
     fun getPets() = firestoreRepository.getPets()
 
     fun updatePet(petId: String, updatedPet: Pet) {
         firestoreRepository.updatePet(petId, updatedPet)
+        fetchPets()
     }
 
     fun deletePet(petId: String) {
         firestoreRepository.deletePet(petId)
+        fetchPets()
     }
 
-    fun getPetById(petId: String) = firestoreRepository.getPetById(petId)
+    fun fetchPetsByField(fieldName: String, value: String) {
+        firestoreRepository.getPetsByField(fieldName, value)
+            .addOnSuccessListener { querySnapshot ->
+                val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
+                _petsList.value = pets
+            }
+            .addOnFailureListener { exception ->
+                _errorMessage.value = exception.message
+            }
+    }
 
-    fun getPetsByStatus(status: String): Task<QuerySnapshot> = firestoreRepository.getPetsByStatus(status)
-
-    fun getPetsByGenero(genero: String): Task<QuerySnapshot> = firestoreRepository.getPetsByGenero(genero)
-
-    fun getPetsByPorte(porte: String): Task<QuerySnapshot> = firestoreRepository.getPetsByPorte(porte)
-
-    fun getPetsByAnimal(animal: String): Task<QuerySnapshot> = firestoreRepository.getPetsByAnimal(animal)
-
-    fun getPetsByNome(nome: String): Task<QuerySnapshot> = firestoreRepository.getPetsByNome(nome)
-
-    fun getPetsByRaca(raca: String): Task<QuerySnapshot> = firestoreRepository.getPetsByRaca(raca)
-
-    fun getPetsByIdade(idade: String): Task<QuerySnapshot> = firestoreRepository.getPetsByIdade(idade)
-
-    fun getPetsByPeso(peso: String): Task<QuerySnapshot> = firestoreRepository.getPetsByPeso(peso)
+    fun getPetById(petId: String): Task<DocumentSnapshot> {
+       return firestoreRepository.getPetById(petId)
+    }
 
 }
 

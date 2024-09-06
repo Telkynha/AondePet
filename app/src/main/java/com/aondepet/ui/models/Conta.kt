@@ -1,11 +1,11 @@
 package com.aondepet.ui.models
 
-class Conta(
-    val nome: String,
-    val email: String,
-    val senha: String,
-    val telefone: String,
-    val listaFavoritos: List<Int> = emptyList()
+data class Conta(
+    val id: String? = null,
+    val nome: String = "teste",
+    val email: String = "email",
+    val senha: String = "123456",
+    val favoritos: List<Pet> = emptyList()
     //Usando o ID dos Pets como parametro para a lista
 ) {
 }
