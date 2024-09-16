@@ -18,9 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,7 +26,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -136,7 +133,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                     .weight(1f)
                     .height(35.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
                 Text(text = "Adotar", color = Color.White)
@@ -148,7 +145,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                     .weight(1f)
                     .height(35.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
                 Text(text = "Encontrar", color = Color.White)
@@ -160,10 +157,10 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                     .weight(1f)
                     .height(35.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
             ) {
-                Text(text = "Favoritos", color = Color.White)
+                Text(text = "Ajudar", color = Color.White)
             }
         } // Row com os botões de filtro
         Spacer(modifier = Modifier.height(24.dp))
@@ -191,6 +188,15 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                         contentColor = MaterialTheme.colorScheme.secondary
                     ) {
                         Icon(Icons.Filled.Add, "Adicionar Post Pet")
+                    }
+                    SmallFloatingActionButton(
+                        onClick = {
+
+                        },
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        Icon(Icons.Filled.FavoriteBorder, "Filtrar favoritos")
                     }
                 }
             } // Autenticado
