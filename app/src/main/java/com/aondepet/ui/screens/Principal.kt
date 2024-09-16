@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -97,7 +99,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 8.dp, ),
+            .padding(horizontal = 8.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -204,6 +206,14 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
 
 @Composable
 fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
+    var isFavorite by remember { mutableStateOf(false) }
+
+    // Buscando o estado inicial do favorito do Firestore
+    LaunchedEffect(pet.id) {
+        viewModel.isFavorito(userId, pet.id!!).addOnSuccessListener { result ->
+            isFavorite = result
+        }
+    }
     Surface(
         onClick = { navController.navigate("post/${pet.id}") },
         modifier = Modifier
@@ -252,12 +262,10 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
-                if(authState == AuthState.Authenticated){
+                if (authState == AuthState.Authenticated) {
                     if (pet.conta == userId) {
                         IconButton(
-                            onClick = { navController.navigate("postFormularioAlterar/${pet.id}") },
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
+                            onClick = { navController.navigate("postFormularioAlterar/${pet.id}") }
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.edit),
@@ -266,32 +274,30 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-                    }else{
+                    } else {
                         IconButton(
-                            onClick = { pet.id?.let { viewModel.favoritar(userId, it) } },
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                        ) {
-                            var isFavorite by remember { mutableStateOf(false) } // Estado para controlar o ícone
-
-                            pet.id?.let { petId ->
-                                viewModel.isFavorito(userId, petId).addOnSuccessListener { result ->
-                                    isFavorite = result
+                            modifier = Modifier.padding(0.dp),
+                            onClick = {
+                                pet.id?.let { petId ->
+                                    viewModel.favoritar(userId, petId)
+                                    viewModel.isFavorito(userId, petId)
+                                        .addOnSuccessListener { result ->
+                                            isFavorite = result
+                                        }
                                 }
                             }
-
+                        ) {
                             Icon(
-                                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                                painter = painterResource(if (isFavorite) R.drawable.favorite_fill else R.drawable.favorite),
                                 contentDescription = "Ícone favoritar animal",
                                 tint = MaterialTheme.colorScheme.secondary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
                     }
-                } // Se verificado
-
+                }
             }
-        } // Row icone gênero e Coração
-    } // Coluna com os itens do card
+        }
+    }
     Spacer(modifier = Modifier.height(24.dp))
 }

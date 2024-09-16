@@ -46,28 +46,12 @@ class FirestoreRepository {
         return contasCollection.document(contaId).update("favoritos", FieldValue.arrayUnion(petId))
     }
 
-    fun favoritar(contaId: String, petId: String) {
-        getFavoritos(contaId).addOnSuccessListener { favoritos ->
-            if (favoritos.contains(petId)) {
-                // Remover dos favoritos
-                updateFavoritos(contaId, petId)
-                    .addOnSuccessListener {
-                        // Pet removido dos favoritos com sucesso
-                    }
-                    .addOnFailureListener { e ->
-                        // Tratar erro ao remover dos favoritos
-                    }
-            } else {
-                // Adicionar aos favoritos
-                updateFavoritos(contaId, petId)
-                    .addOnSuccessListener {
-                        // Pet adicionado aos favoritos com sucesso
-                    }
-                    .addOnFailureListener { e ->
-                        // Tratar erro ao adicionar aos favoritos
-                    }
-            }
-        }
+    fun addFavorito(contaId: String, petId: String): Task<Void> {
+        return contasCollection.document(contaId).update("favoritos", FieldValue.arrayUnion(petId))
+    }
+
+    fun removeFavorito(contaId: String, petId: String): Task<Void> {
+        return contasCollection.document(contaId).update("favoritos", FieldValue.arrayRemove(petId))
     }
 
     fun isFavorito(contaId: String, petId: String): Task<Boolean> {

@@ -127,19 +127,13 @@ class PetViewModel : ViewModel() {
         getFavoritos(contaId).addOnSuccessListener { favoritos ->
             if (favoritos.contains(petId)) {
                 // Remover dos favoritos
-                updateFavoritos(contaId, petId)
-                    .addOnSuccessListener {
-                        // Pet removido dos favoritos com sucesso
-                    }
+                firestoreRepository.removeFavorito(contaId, petId)
                     .addOnFailureListener { e ->
                         _errorMessage.value = e.message
                     }
             } else {
                 // Adicionar aos favoritos
-                updateFavoritos(contaId, petId)
-                    .addOnSuccessListener {
-                        // Pet adicionado aos favoritos com sucesso
-                    }
+                firestoreRepository.addFavorito(contaId, petId)
                     .addOnFailureListener { e ->
                         _errorMessage.value = e.message
                     }
