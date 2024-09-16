@@ -115,6 +115,44 @@ class PetViewModel : ViewModel() {
         } ?: throw IllegalStateException("UserId vazio")
     }
 
+    fun getFavoritos(contaId: String): Task<List<String>> {
+        return firestoreRepository.getFavoritos(contaId)
+    }
+
+    fun updateFavoritos(contaId: String, petId: String): Task<Void> {
+        return firestoreRepository.updateFavoritos(contaId, petId)
+    }
+
+    fun favoritar(contaId: String, petId: String) {
+        getFavoritos(contaId).addOnSuccessListener { favoritos ->
+            if (favoritos.contains(petId)) {
+                // Remover dos favoritos
+                updateFavoritos(contaId, petId)
+                    .addOnSuccessListener {
+                        // Pet removido dos favoritos com sucesso
+                    }
+                    .addOnFailureListener { e ->
+                        _errorMessage.value = e.message
+                    }
+            } else {
+                // Adicionar aos favoritos
+                updateFavoritos(contaId, petId)
+                    .addOnSuccessListener {
+                        // Pet adicionado aos favoritos com sucesso
+                    }
+                    .addOnFailureListener { e ->
+                        _errorMessage.value = e.message
+                    }
+            }
+        }.addOnFailureListener { e ->
+            _errorMessage.value = e.message
+        }
+    }
+
+    fun isFavorito(contaId: String, petId: String): Task<Boolean> {
+        return firestoreRepository.isFavorito(contaId, petId)
+    }
+
     // ========== METODOS - PET ==========
 
     fun addPet(pet: Pet) {

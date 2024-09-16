@@ -4,6 +4,7 @@ import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 
@@ -28,6 +29,52 @@ class FirestoreRepository {
 
     fun getNomeContaById(contaId: String): Task<DocumentSnapshot> {
         return contasCollection.document(contaId).get()
+    }
+
+    fun getFavoritos(contaId: String): Task<List<String>> {
+        return contasCollection.document(contaId).get().continueWith { task ->
+            val document = task.result
+            if (document != null && document.exists()) {
+                document.get("favoritos") as? List<String> ?: emptyList()
+            } else {
+                emptyList()
+            }
+        }
+    }
+
+    fun updateFavoritos(contaId: String, petId: String): Task<Void> {
+        return contasCollection.document(contaId).update("favoritos", FieldValue.arrayUnion(petId))
+    }
+
+    fun favoritar(contaId: String, petId: String) {
+        getFavoritos(contaId).addOnSuccessListener { favoritos ->
+            if (favoritos.contains(petId)) {
+                // Remover dos favoritos
+                updateFavoritos(contaId, petId)
+                    .addOnSuccessListener {
+                        // Pet removido dos favoritos com sucesso
+                    }
+                    .addOnFailureListener { e ->
+                        // Tratar erro ao remover dos favoritos
+                    }
+            } else {
+                // Adicionar aos favoritos
+                updateFavoritos(contaId, petId)
+                    .addOnSuccessListener {
+                        // Pet adicionado aos favoritos com sucesso
+                    }
+                    .addOnFailureListener { e ->
+                        // Tratar erro ao adicionar aos favoritos
+                    }
+            }
+        }
+    }
+
+    fun isFavorito(contaId: String, petId: String): Task<Boolean> {
+        return getFavoritos(contaId).continueWith { task ->
+            val favoritos = task.result
+            favoritos.contains(petId)
+        }
     }
 
     // ========== METODOS - PET ==========

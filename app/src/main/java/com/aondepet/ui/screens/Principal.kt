@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -32,6 +34,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -186,23 +191,19 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                         Icon(Icons.Filled.Add, "Adicionar Post Pet")
                     }
                 }
-            }
+            } // Autenticado
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
             items(pets) { pet ->
-                if(pet.conta == userId){
-                    userId?.let { CardPetUser(navController = navController, pet = pet, userId = it) }
-                }else{
-                    CardPet(navController = navController, pet = pet)
-                }
+                authState?.let { CardPet(navController = navController, pet = pet, authState = it, viewModel = viewModel, userId = userId.toString()) }
             }
         }
     } // Fim da coluna
 }
 
 @Composable
-fun CardPet(navController: NavController, pet: Pet) {
+fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
     Surface(
         onClick = { navController.navigate("post/${pet.id}") },
         modifier = Modifier
@@ -251,91 +252,46 @@ fun CardPet(navController: NavController, pet: Pet) {
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
-                IconButton(
-                    onClick = { /*TODO: Lógica para adicionar aos favoritos */ },
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.favorite),
-                        contentDescription = "Ícone favoritar animal",
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                if(authState == AuthState.Authenticated){
+                    if (pet.conta == userId) {
+                        IconButton(
+                            onClick = { navController.navigate("postFormularioAlterar/${pet.id}") },
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.edit),
+                                contentDescription = "Ícone alterar post animal",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }else{
+                        IconButton(
+                            onClick = { pet.id?.let { viewModel.favoritar(userId, it) } },
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                        ) {
+                            var isFavorite by remember { mutableStateOf(false) } // Estado para controlar o ícone
+
+                            pet.id?.let { petId ->
+                                viewModel.isFavorito(userId, petId).addOnSuccessListener { result ->
+                                    isFavorite = result
+                                }
+                            }
+
+                            Icon(
+                                imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                                contentDescription = "Ícone favoritar animal",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                } // Se verificado
+
             }
         } // Row icone gênero e Coração
     } // Coluna com os itens do card
-    Spacer(modifier = Modifier.height(24.dp))
-}
-
-@Composable
-fun CardPetUser(navController: NavController, pet: Pet, userId: String) {
-
-    Surface(
-        onClick = { navController.navigate("post/${pet.id}") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-        shape = RoundedCornerShape(4.dp),
-        color = Color.Transparent
-    ) {
-        Column {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.img),
-                    contentDescription = "Imagem Pet",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(4.dp))
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-                )
-            } // Row com a imagem do pet
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val generoIcon = when (pet.genero) {
-                    Genero.MACHO -> R.drawable.male
-                    Genero.FEMEA -> R.drawable.female
-                    else -> R.drawable.question_mark
-                }
-                Icon(
-                    painter = painterResource(generoIcon),
-                    contentDescription = "Ícone gênero",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = pet.nome,
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                if (pet.conta == userId) {
-                    IconButton(
-                        onClick = { navController.navigate("postFormularioAlterar/${pet.id}") },
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.edit),
-                            contentDescription = "Ícone alterar post animal",
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                }
-            } // Row icone gênero e Coração
-        } // Coluna com os itens do card
-    } // Surface Card do pet
     Spacer(modifier = Modifier.height(24.dp))
 }
