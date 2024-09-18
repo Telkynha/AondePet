@@ -27,7 +27,7 @@ class FirestoreRepository {
         return contasCollection.document(contaId).delete()
     }
 
-    fun getNomeContaById(contaId: String): Task<DocumentSnapshot> {
+    fun getContaById(contaId: String): Task<DocumentSnapshot> {
         return contasCollection.document(contaId).get()
     }
 

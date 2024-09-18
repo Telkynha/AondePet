@@ -2,6 +2,8 @@ package com.aondepet.ui.control
 
 import FirestoreRepository
 import android.net.Uri
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +11,6 @@ import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
-import java.util.UUID
 
 class PetViewModel : ViewModel() {
     private val authRepository = FirebaseAuthRepository()
@@ -112,9 +113,9 @@ class PetViewModel : ViewModel() {
         }
     }
 
-    fun getNomeContaById(): Task<DocumentSnapshot> {
+    fun getContaById(): Task<DocumentSnapshot> {
         return _userId.value?.let {
-            firestoreRepository.getNomeContaById(it)
+            firestoreRepository.getContaById(it)
         } ?: throw IllegalStateException("UserId vazio")
     }
 
@@ -209,18 +210,6 @@ class PetViewModel : ViewModel() {
             .addOnFailureListener { exception ->
                 _errorMessage.value = exception.message
             }
-    }
-
-    fun uploadImage(imageUri: Uri, petId: String): Task<Uri> {
-        return storageRepository.uploadImage(imageUri, petId)
-    }
-
-    fun getImageUri(petId: String): Task<Uri> {
-        return storageRepository.getImageUri(petId)
-    }
-
-    fun updateImage(imageUri: Uri, petId: String): Task<Uri> {
-        return storageRepository.updateImage(imageUri, petId)
     }
 
 }

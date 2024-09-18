@@ -5,8 +5,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -42,8 +42,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -53,18 +54,16 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.aondepet.R
-import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
 import com.aondepet.ui.models.Animal
 import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
-import com.google.android.gms.cast.framework.media.ImagePicker
 
 @Composable
 fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
-    // Estado local para os campos do formulário
+
     var nome by remember { mutableStateOf("") }
     var raca by remember { mutableStateOf("") }
     var genero by remember { mutableStateOf(Genero.MACHO) }
@@ -77,14 +76,12 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
     var porte by remember { mutableStateOf(Porte.MEDIO) }
     var estado by remember { mutableStateOf("") }
     var cidade by remember { mutableStateOf("") }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) } // URI da imagem selecionada
     val userId by viewModel.userId.observeAsState()
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri: Uri? ->
-            selectedImageUri = uri
-        })
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
+    }
+    val context= LocalContext.current
 
     Column(
         modifier = Modifier
@@ -127,22 +124,28 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             }
         }
 
-        if (selectedImageUri != null) {
-            Image(
-                painter = rememberAsyncImagePainter(selectedImageUri),
-                contentDescription = "Imagem Selecionada",
-                modifier = Modifier.size(128.dp)
-            )
+        val painter: Painter = if (imageUri != null) {
+            rememberAsyncImagePainter(imageUri)
+        }else{
+            painterResource(R.drawable.img)
         }
+
+        Image(painter = painter, contentDescription = "Imagem Pet",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .height(128.dp)
+                .width(250.dp)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickable {
+                    launcher.launch("image/*")
+                }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Botão para escolher imagem da galeria
-        Button(onClick = {
-            imagePickerLauncher.launch("image/*")
-        }) {
-            Text("Escolher Imagem")
-        }
 
         OutlinedTextField(
             value = nome,
@@ -150,8 +153,6 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Nome do Pet", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground) }
         )
-
-        // Campos para a imagem ainda não foram implementados
 
         Surface(
             modifier = Modifier
@@ -293,10 +294,11 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         telefone = telefone,
                         estado = estado,
                         cidade = cidade,
-                        conta = userId.toString() // Usando userId diretamente
+                        conta = userId.toString(), // Usando userId diretamente
                     )
+
                     viewModel.addPet(pet)
-                    selectedImageUri?.let { viewModel.uploadImage(it, "pT3JwrvWaiTTjhpgVKx8") }
+
                     navController.navigate("principal")
                 }
             },
@@ -325,14 +327,13 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
     var porte by remember { mutableStateOf(Porte.MEDIO) }
     var estado by remember { mutableStateOf("") }
     var cidade by remember { mutableStateOf("") }
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) } // URI da imagem selecionada
     val userId by viewModel.userId.observeAsState()
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
+    }
 
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri: Uri? ->
-            selectedImageUri = uri
-        })
+    val context= LocalContext.current
 
     LaunchedEffect(petId) {
         viewModel.getPetById(petId!!).addOnSuccessListener { document ->
@@ -350,7 +351,7 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                 porte = pet?.porte ?: Porte.MEDIO
                 estado = pet?.estado ?: ""
                 cidade = pet?.cidade ?: ""
-                selectedImageUri = pet?.foto!!.toUri()
+                imageUri = pet?.foto
             }
         }
     }
@@ -396,22 +397,29 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
             }
         }
 
-        if (selectedImageUri != null) {
-            Image(
-                painter = rememberAsyncImagePainter(selectedImageUri),
-                contentDescription = "Imagem Selecionada",
-                modifier = Modifier.size(128.dp)
-            )
+        val painter: Painter = if (imageUri != null) {
+            rememberAsyncImagePainter(imageUri)
+        }else{
+            painterResource(R.drawable.img)
         }
+
+
+        Image(painter = painter, contentDescription = "Imagem Pet",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .height(128.dp)
+                .width(250.dp)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .clickable {
+                    launcher.launch("image/*")
+                }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Botão para escolher imagem da galeria
-        Button(onClick = {
-            imagePickerLauncher.launch("image/*")
-        }) {
-            Text("Escolher Imagem")
-        }
 
         OutlinedTextField(
             value = nome,
@@ -419,8 +427,6 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
             modifier = Modifier.fillMaxWidth(),
             label = { Text("Nome do Pet", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground) }
         )
-
-        // Campos para a imagem ainda não foram implementados
 
         Surface(
             modifier = Modifier
@@ -561,13 +567,15 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                         telefone = telefone,
                         estado = estado,
                         cidade = cidade,
-                        conta = it
+                        conta = it,
                     )
                 }
-                // Pet mockado para alterar
-                pet?.let { viewModel.updatePet(petId!!, it) }
-                selectedImageUri?.let { viewModel.updateImage(it, "pT3JwrvWaiTTjhpgVKx8") }
 
+                if (imageUri == null) {
+                    Toast.makeText(context, "Selecione uma imagem", Toast.LENGTH_SHORT).show()
+                }else{
+                    pet?.let { viewModel.updatePet(petId!!, it) }
+                }
                 navController.navigate("principal")
             },
             modifier = Modifier.fillMaxWidth()

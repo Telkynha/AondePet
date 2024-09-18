@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,8 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -242,11 +246,14 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Image(
-                    painter = rememberAsyncImagePainter(viewModel.getImageUri("$pet.id")),
-                    contentDescription = "Imagem do Pet",
+                    painter = painterResource(R.drawable.img),
+                    contentDescription = "Imagem do Pet ${pet.nome}",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(128.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
                 )

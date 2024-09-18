@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.aondepet.ui.control.PetNavigation
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.theme.AondePetTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -14,7 +15,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val viewModel: PetViewModel by viewModels()
         setContent {
-            PetNavigation(petViewModel = viewModel)
+            AondePetTheme {
+                PetNavigation(petViewModel = viewModel)
+            }
         }
     }
 }

@@ -64,6 +64,8 @@ dependencies {
     implementation(libs.firebase.crashlytics.buildtools)
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.storage.ktx)
     implementation(libs.play.services.cast.framework)
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation(libs.firebase.storage)

@@ -17,7 +17,7 @@ data class Pet(
     val conta: String = "",
     val email: String = "",
     val telefone: String = "",
-    val foto: String = ""
+    var foto: Uri? = null
 ) {
 
 }
