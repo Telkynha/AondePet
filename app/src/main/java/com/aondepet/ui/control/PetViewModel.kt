@@ -1,6 +1,7 @@
 package com.aondepet.ui.control
 
 import FirestoreRepository
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,10 +9,12 @@ import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
+import java.util.UUID
 
 class PetViewModel : ViewModel() {
     private val authRepository = FirebaseAuthRepository()
     private val firestoreRepository = FirestoreRepository()
+    private val storageRepository = StorageRepository()
 
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
@@ -207,6 +210,19 @@ class PetViewModel : ViewModel() {
                 _errorMessage.value = exception.message
             }
     }
+
+    fun uploadImage(imageUri: Uri, petId: String): Task<Uri> {
+        return storageRepository.uploadImage(imageUri, petId)
+    }
+
+    fun getImageUri(petId: String): Task<Uri> {
+        return storageRepository.getImageUri(petId)
+    }
+
+    fun updateImage(imageUri: Uri, petId: String): Task<Uri> {
+        return storageRepository.updateImage(imageUri, petId)
+    }
+
 }
 
 sealed class AuthState{

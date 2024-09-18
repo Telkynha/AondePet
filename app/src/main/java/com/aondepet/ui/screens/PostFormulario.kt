@@ -1,6 +1,9 @@
 package com.aondepet.ui.screens
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,7 +49,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
@@ -54,6 +60,7 @@ import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
+import com.google.android.gms.cast.framework.media.ImagePicker
 
 @Composable
 fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
@@ -68,8 +75,16 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
     var status by remember { mutableStateOf(Status.ADOTADO) }
     var animal by remember { mutableStateOf(Animal.CACHORRO) }
     var porte by remember { mutableStateOf(Porte.MEDIO) }
-
+    var estado by remember { mutableStateOf("") }
+    var cidade by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) } // URI da imagem selecionada
     val userId by viewModel.userId.observeAsState()
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            selectedImageUri = uri
+        })
 
     Column(
         modifier = Modifier
@@ -110,6 +125,23 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
+        }
+
+        if (selectedImageUri != null) {
+            Image(
+                painter = rememberAsyncImagePainter(selectedImageUri),
+                contentDescription = "Imagem Selecionada",
+                modifier = Modifier.size(128.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botão para escolher imagem da galeria
+        Button(onClick = {
+            imagePickerLauncher.launch("image/*")
+        }) {
+            Text("Escolher Imagem")
         }
 
         OutlinedTextField(
@@ -259,9 +291,12 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         porte = porte,
                         email = email,
                         telefone = telefone,
+                        estado = estado,
+                        cidade = cidade,
                         conta = userId.toString() // Usando userId diretamente
                     )
                     viewModel.addPet(pet)
+                    selectedImageUri?.let { viewModel.uploadImage(it, "pT3JwrvWaiTTjhpgVKx8") }
                     navController.navigate("principal")
                 }
             },
@@ -288,8 +323,16 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
     var status by remember { mutableStateOf(Status.ADOTADO) }
     var animal by remember { mutableStateOf(Animal.CACHORRO) }
     var porte by remember { mutableStateOf(Porte.MEDIO) }
-
+    var estado by remember { mutableStateOf("") }
+    var cidade by remember { mutableStateOf("") }
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) } // URI da imagem selecionada
     val userId by viewModel.userId.observeAsState()
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri: Uri? ->
+            selectedImageUri = uri
+        })
 
     LaunchedEffect(petId) {
         viewModel.getPetById(petId!!).addOnSuccessListener { document ->
@@ -305,6 +348,9 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                 status = pet?.status ?: Status.ADOTADO
                 animal = pet?.animal ?: Animal.CACHORRO
                 porte = pet?.porte ?: Porte.MEDIO
+                estado = pet?.estado ?: ""
+                cidade = pet?.cidade ?: ""
+                selectedImageUri = pet?.foto!!.toUri()
             }
         }
     }
@@ -348,6 +394,23 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
+        }
+
+        if (selectedImageUri != null) {
+            Image(
+                painter = rememberAsyncImagePainter(selectedImageUri),
+                contentDescription = "Imagem Selecionada",
+                modifier = Modifier.size(128.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botão para escolher imagem da galeria
+        Button(onClick = {
+            imagePickerLauncher.launch("image/*")
+        }) {
+            Text("Escolher Imagem")
         }
 
         OutlinedTextField(
@@ -496,11 +559,14 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                         porte = porte,
                         email = email,
                         telefone = telefone,
+                        estado = estado,
+                        cidade = cidade,
                         conta = it
                     )
                 }
                 // Pet mockado para alterar
                 pet?.let { viewModel.updatePet(petId!!, it) }
+                selectedImageUri?.let { viewModel.updateImage(it, "pT3JwrvWaiTTjhpgVKx8") }
 
                 navController.navigate("principal")
             },

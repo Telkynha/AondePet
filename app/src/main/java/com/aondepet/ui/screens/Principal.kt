@@ -1,5 +1,8 @@
 package com.aondepet.ui.screens
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +47,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
@@ -237,13 +243,14 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Image(
-                    painter = painterResource(R.drawable.img),
-                    contentDescription = "Imagem Pet",
+                    painter = rememberAsyncImagePainter(viewModel.getImageUri("$pet.id")),
+                    contentDescription = "Imagem do Pet",
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
                 )
+
             } // Row com a imagem do pet
             Row(
                 modifier = Modifier
