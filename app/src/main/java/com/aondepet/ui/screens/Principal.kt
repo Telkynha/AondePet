@@ -224,7 +224,6 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
 fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
     var isFavorite by remember { mutableStateOf(false) }
 
-    // Buscando o estado inicial do favorito do Firestore
     LaunchedEffect(pet.id) {
         viewModel.isFavorito(userId, pet.id!!).addOnSuccessListener { result ->
             isFavorite = result
@@ -267,8 +266,8 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 val generoIcon = when (pet.genero) {
-                    Genero.MACHO -> R.drawable.male
-                    Genero.FEMEA -> R.drawable.female
+                    Genero.Macho -> R.drawable.male
+                    Genero.Femea -> R.drawable.female
                     else -> R.drawable.question_mark
                 }
                 Icon(

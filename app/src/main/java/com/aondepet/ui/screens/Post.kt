@@ -1,5 +1,6 @@
 package com.aondepet.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -24,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,8 +40,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aondepet.R
+import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
 import com.aondepet.ui.models.Animal
+import com.aondepet.ui.models.Estado
 import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
@@ -49,15 +54,19 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
 
     var pet by remember { mutableStateOf<Pet?>(null) }
     var nome by remember { mutableStateOf("") }
+    var animal by remember { mutableStateOf(Animal.Cachorro) }
     var raca by remember { mutableStateOf("") }
-    var genero by remember { mutableStateOf(Genero.MACHO) }
+    var genero by remember { mutableStateOf(Genero.Macho) }
+    var porte by remember { mutableStateOf(Porte.Medio) }
     var idade by remember { mutableStateOf("") }
+    var estado by remember { mutableStateOf(Estado.AC) }
+    var cidade by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf(Status.Adotado) }
     var descricao by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(Status.ADOTADO) }
-    var animal by remember { mutableStateOf(Animal.CACHORRO) }
-    var porte by remember { mutableStateOf(Porte.MEDIO) }
+    var foto by remember { mutableStateOf<Uri?>(null) }
+    var conta by remember { mutableStateOf("") }
 
     LaunchedEffect(petId) {
         if (petId != null) {
@@ -65,16 +74,32 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                 if (document != null && document.exists()) {
                     pet = document.toObject(Pet::class.java)
                     nome = pet?.nome ?: ""
+                    animal = pet?.animal ?: Animal.Cachorro
                     raca = pet?.raca ?: ""
-                    genero = pet?.genero ?: Genero.MACHO
-                    idade = pet?.idade?.toString()?: ""
+                    genero = pet?.genero ?: Genero.Macho
+                    porte = pet?.porte ?: Porte.Medio
+                    idade = pet?.idade.toString()
+                    estado = pet?.estado ?: Estado.AC
+                    cidade = pet?.cidade ?: ""
+                    status = pet?.status ?: Status.Adotado
                     descricao = pet?.descricao ?: ""
                     email = pet?.email ?: ""
                     telefone = pet?.telefone ?: ""
-                    status = pet?.status ?: Status.ADOTADO
-                    animal = pet?.animal ?: Animal.CACHORRO
-                    porte = pet?.porte ?: Porte.MEDIO
+                    foto = pet?.foto ?: Uri.EMPTY
+                    conta = pet?.conta ?: ""
                 }
+            }
+        }
+    }
+
+    val userId by viewModel.userId.observeAsState()
+    val authState = viewModel.authState.observeAsState()
+
+    var isFavorite by remember { mutableStateOf(false) }
+    LaunchedEffect(petId) {
+        userId?.let {
+            viewModel.isFavorito(it, petId!!).addOnSuccessListener { result ->
+                isFavorite = result
             }
         }
     }
@@ -161,21 +186,51 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            val generoIcon = when (genero) {
+                Genero.Macho -> R.drawable.male
+                Genero.Femea -> R.drawable.female
+                else -> R.drawable.question_mark
+            }
             Icon(
-                painter = painterResource(R.drawable.male),
-                contentDescription = "Icone genero macho",
+                painter = painterResource(generoIcon),
+                contentDescription = "Ícone gênero",
                 tint = MaterialTheme.colorScheme.primary
             )
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.favorite),
-                    contentDescription = "Icone favoritar animal",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
+            if (authState.value == AuthState.Authenticated) {
+                if (conta == userId) {
+                    IconButton(
+                        onClick = { navController.navigate("postFormularioAlterar/${petId}") }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.edit),
+                            contentDescription = "Ícone alterar post animal",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                } else {
+                    IconButton(
+                        modifier = Modifier.padding(0.dp),
+                        onClick = {
+                            petId?.let { petId ->
+                                userId?.let { viewModel.favoritar(it, petId) }
+                                userId?.let {
+                                    viewModel.isFavorito(it, petId)
+                                        .addOnSuccessListener { result ->
+                                            isFavorite = result
+                                        }
+                                }
+                            }
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(if (isFavorite) R.drawable.favorite_fill else R.drawable.favorite),
+                            contentDescription = "Ícone favoritar animal",
+                            tint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
             }
         } // Row icone gênero e Coração
 
@@ -223,7 +278,23 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         fontSize = 16.sp,
                         color = Color.White
                     )
-                } // Column que segura a segunda coluna de dados do Pet
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Estado: $estado",
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                    Text(
+                        text = "Cidade: $cidade",
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }// Column que segura a segunda coluna de dados do Pet
             } //Row que possui as duas columns
         } // Surface roxa para dados Pet
 

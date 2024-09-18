@@ -56,6 +56,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.aondepet.R
 import com.aondepet.ui.control.PetViewModel
 import com.aondepet.ui.models.Animal
+import com.aondepet.ui.models.Estado
 import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
@@ -66,15 +67,15 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 
     var nome by remember { mutableStateOf("") }
     var raca by remember { mutableStateOf("") }
-    var genero by remember { mutableStateOf(Genero.MACHO) }
+    var genero by remember { mutableStateOf(Genero.Macho) }
     var idade by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(Status.ADOTADO) }
-    var animal by remember { mutableStateOf(Animal.CACHORRO) }
-    var porte by remember { mutableStateOf(Porte.MEDIO) }
-    var estado by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf(Status.Adotado) }
+    var animal by remember { mutableStateOf(Animal.Cachorro) }
+    var porte by remember { mutableStateOf(Porte.Medio) }
+    var estado by remember { mutableStateOf(Estado.AC) }
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -207,6 +208,20 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Idade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
                 )
+                Spacer(modifier = Modifier.height(4.dp))
+                DropdownSelector(
+                    label = "Porte",
+                    options = Porte.entries,
+                    selectedOption = porte.toString(),
+                    onOptionSelected = { porte = it as Porte }
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = cidade,
+                    onValueChange = { cidade = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Cidade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                )
             }
         }
 
@@ -317,15 +332,15 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
 
     var nome by remember { mutableStateOf("") }
     var raca by remember { mutableStateOf("") }
-    var genero by remember { mutableStateOf(Genero.MACHO) }
+    var genero by remember { mutableStateOf(Genero.Macho) }
     var idade by remember { mutableStateOf("") }
     var descricao by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(Status.ADOTADO) }
-    var animal by remember { mutableStateOf(Animal.CACHORRO) }
-    var porte by remember { mutableStateOf(Porte.MEDIO) }
-    var estado by remember { mutableStateOf("") }
+    var status by remember { mutableStateOf(Status.Adotado) }
+    var animal by remember { mutableStateOf(Animal.Cachorro) }
+    var porte by remember { mutableStateOf(Porte.Medio) }
+    var estado by remember { mutableStateOf(Estado.AC) }
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -341,15 +356,15 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                 pet = document.toObject(Pet::class.java)
                 nome = pet?.nome ?: ""
                 raca = pet?.raca ?: ""
-                genero = pet?.genero ?: Genero.MACHO
+                genero = pet?.genero ?: Genero.Macho
                 idade = pet?.idade?.toString()?: ""
                 descricao = pet?.descricao ?: ""
                 email = pet?.email ?: ""
                 telefone = pet?.telefone ?: ""
-                status = pet?.status ?: Status.ADOTADO
-                animal = pet?.animal ?: Animal.CACHORRO
-                porte = pet?.porte ?: Porte.MEDIO
-                estado = pet?.estado ?: ""
+                status = pet?.status ?: Status.Adotado
+                animal = pet?.animal ?: Animal.Cachorro
+                porte = pet?.porte ?: Porte.Medio
+                estado = pet?.estado ?: Estado.AC
                 cidade = pet?.cidade ?: ""
                 imageUri = pet?.foto
             }
@@ -480,6 +495,20 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     onValueChange = { idade = it },
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text("Idade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                DropdownSelector(
+                    label = "Porte",
+                    options = Porte.entries,
+                    selectedOption = porte.toString(),
+                    onOptionSelected = { porte = it as Porte }
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = cidade,
+                    onValueChange = { cidade = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Cidade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
                 )
             }
         }
