@@ -6,6 +6,5 @@ data class Conta(
     val email: String = "email",
     val senha: String = "123456",
     val favoritos: List<String> = emptyList()
-    //Usando o ID dos Pets como parametro para a lista
 ) {
 }

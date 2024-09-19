@@ -39,7 +39,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
@@ -50,6 +52,7 @@ import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
 import com.aondepet.ui.theme.Spacing
+import java.net.URI
 
 @Composable
 fun Post(navController: NavController, viewModel: PetViewModel, petId: String? = ""){
@@ -87,8 +90,8 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     descricao = pet?.descricao ?: ""
                     email = pet?.email ?: ""
                     telefone = pet?.telefone ?: ""
-                    foto = pet?.foto ?: Uri.EMPTY
                     conta = pet?.conta ?: ""
+                    foto = pet?.foto?.toUri()
                 }
             }
         }
@@ -96,6 +99,8 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
 
     val userId by viewModel.userId.observeAsState()
     val authState = viewModel.authState.observeAsState()
+
+    val petImage by viewModel.getPetImage(petId!!).observeAsState()
 
     var isFavorite by remember { mutableStateOf(false) }
     LaunchedEffect(petId) {
@@ -171,15 +176,30 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
             )
         } // Row textos: Nome e Status
 
-        Image(
-            painter = painterResource(R.drawable.img),
-            contentDescription = "Imagem Pet",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-        )
+
+        if(petImage != null){
+            AsyncImage(
+                model = petImage,
+                contentDescription = "Imagem do Pet",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+            )
+        }else{
+            Image(
+                painter = painterResource(R.drawable.img),
+                contentDescription = "Imagem Pet",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+            )
+        }
 
         Row(
             modifier = Modifier

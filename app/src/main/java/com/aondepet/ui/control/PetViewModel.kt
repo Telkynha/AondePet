@@ -4,6 +4,7 @@ import FirestoreRepository
 import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -192,8 +193,9 @@ class PetViewModel : ViewModel() {
 
     fun addPet(pet: Pet) {
         firestoreRepository.addPet(pet)
-            .addOnSuccessListener {
-                fetchPets() // Atualiza a lista de pets após adicionar
+            .addOnSuccessListener { documentReference ->
+                uploadImage(pet.foto.toUri(), pet.id!!)
+                fetchPets()
             }
             .addOnFailureListener { e ->
                 _errorMessage.value = e.message
@@ -233,6 +235,7 @@ class PetViewModel : ViewModel() {
 
     fun updatePet(petId: String, updatedPet: Pet) {
         firestoreRepository.updatePet(petId, updatedPet)
+        uploadImage(updatedPet.foto.toUri(), updatedPet.id!!)
         fetchPets()
     }
 
@@ -273,6 +276,22 @@ class PetViewModel : ViewModel() {
                     _errorMessage.value = exception.message
                 }
         }
+    }
+
+    fun uploadImage(imageUri: Uri, petId: String) {
+        storageRepository.uploadImage(imageUri, petId)
+    }
+
+    fun getPetImage(petId: String): LiveData<Uri?> {
+        val imageUrl = MutableLiveData<Uri?>()
+        storageRepository.getImageUrl(petId)
+            .addOnSuccessListener { uri ->
+                imageUrl.value = uri
+            }
+            .addOnFailureListener {
+                imageUrl.value = null
+            }
+        return imageUrl
     }
 
 }

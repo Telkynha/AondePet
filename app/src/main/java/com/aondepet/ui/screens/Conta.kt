@@ -51,7 +51,7 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
     }
 
     var conta by remember { mutableStateOf<Conta?>(null) }
-    LaunchedEffect(Unit) {
+    if(authState.value == AuthState.Authenticated){
         viewModel.getContaById().addOnSuccessListener { document ->
             if (document != null && document.exists()) {
                 conta = document.toObject(Conta::class.java)

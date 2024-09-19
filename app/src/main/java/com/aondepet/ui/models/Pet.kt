@@ -1,7 +1,5 @@
 package com.aondepet.ui.models
 
-import android.net.Uri
-
 data class Pet(
     var id: String? = null,
     val nome: String = "",
@@ -17,7 +15,7 @@ data class Pet(
     val conta: String = "",
     val email: String = "",
     val telefone: String = "",
-    var foto: Uri? = null
+    var foto: String = ""
 ) {
 
 }

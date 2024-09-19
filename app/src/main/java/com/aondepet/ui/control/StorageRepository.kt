@@ -16,4 +16,9 @@ class StorageRepository {
         imageRef.putFile(imageUri)
     }
 
+    fun getImageUrl(petId: String): Task<Uri> {
+        val imageRef = storageRef.child("pets/${petId}")
+        return imageRef.downloadUrl
+    }
+
 }

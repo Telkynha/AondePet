@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -61,6 +62,7 @@ import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
+import java.net.URI
 
 @Composable
 fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
@@ -79,10 +81,10 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri = uri
-    }
-    val context= LocalContext.current
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+        }
 
     Column(
         modifier = Modifier
@@ -126,16 +128,21 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
         }
 
         val painter: Painter = if (imageUri != null) {
-            rememberAsyncImagePainter(imageUri)
-        }else{
+            rememberAsyncImagePainter(
+                model = imageUri, // Use a URI de conteúdo diretamente
+                contentScale = ContentScale.Crop
+            )
+        } else {
             painterResource(R.drawable.img)
         }
 
         Image(painter = painter, contentDescription = "Imagem Pet",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(128.dp)
-                .width(250.dp)
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .clip(RoundedCornerShape(4.dp))
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
@@ -152,7 +159,13 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             value = nome,
             onValueChange = { nome = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Nome do Pet", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground) }
+            label = {
+                Text(
+                    "Nome do Pet",
+                    fontSize = 22.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         )
 
         Surface(
@@ -192,7 +205,13 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     value = raca,
                     onValueChange = { raca = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Raça", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Raça",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 DropdownSelector(
@@ -206,7 +225,13 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     value = idade,
                     onValueChange = { idade = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Idade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Idade",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 DropdownSelector(
@@ -220,7 +245,13 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     value = cidade,
                     onValueChange = { cidade = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Cidade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Cidade",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
             }
         }
@@ -280,21 +311,32 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     value = email,
                     onValueChange = { email = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Email", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Email",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = telefone,
                     onValueChange = { telefone = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Telefone", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Telefone",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
             }
         }
 
         Button(
             onClick = {
-                // Use userId as a String, handle nullability
                 if (userId != null) {
                     val pet = Pet(
                         nome = nome,
@@ -309,11 +351,11 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         telefone = telefone,
                         estado = estado,
                         cidade = cidade,
-                        conta = userId.toString(), // Usando userId diretamente
+                        conta = userId!!,
+                        foto = imageUri.toString()
                     )
 
                     viewModel.addPet(pet)
-
                     navController.navigate("principal")
                 }
             },
@@ -325,7 +367,11 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 }
 
 @Composable
-fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel, petId: String? = "") {
+fun PostFormularioAlterar(
+    navController: NavController,
+    viewModel: PetViewModel,
+    petId: String? = ""
+) {
 
     // Pet mockado
     var pet by remember { mutableStateOf<Pet?>(null) }
@@ -343,12 +389,11 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
     var estado by remember { mutableStateOf(Estado.AC) }
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-        imageUri = uri
-    }
-
-    val context= LocalContext.current
+    var imageUri by remember { mutableStateOf<Uri?>(viewModel.getPetImage(petId!!).value ?: null) }
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+        }
 
     LaunchedEffect(petId) {
         viewModel.getPetById(petId!!).addOnSuccessListener { document ->
@@ -357,7 +402,7 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                 nome = pet?.nome ?: ""
                 raca = pet?.raca ?: ""
                 genero = pet?.genero ?: Genero.Macho
-                idade = pet?.idade?.toString()?: ""
+                idade = pet?.idade?.toString() ?: ""
                 descricao = pet?.descricao ?: ""
                 email = pet?.email ?: ""
                 telefone = pet?.telefone ?: ""
@@ -366,7 +411,7 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                 porte = pet?.porte ?: Porte.Medio
                 estado = pet?.estado ?: Estado.AC
                 cidade = pet?.cidade ?: ""
-                imageUri = pet?.foto
+                imageUri = pet?.foto?.toUri()
             }
         }
     }
@@ -413,17 +458,21 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
         }
 
         val painter: Painter = if (imageUri != null) {
-            rememberAsyncImagePainter(imageUri)
-        }else{
+            rememberAsyncImagePainter(
+                model = imageUri, // Use a URI de conteúdo diretamente
+                contentScale = ContentScale.Crop
+            )
+        } else {
             painterResource(R.drawable.img)
         }
-
 
         Image(painter = painter, contentDescription = "Imagem Pet",
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(128.dp)
-                .width(250.dp)
+                .fillMaxWidth()
+                .height(300.dp)
+                .padding(horizontal = 8.dp, vertical = 8.dp)
+                .clip(RoundedCornerShape(4.dp))
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,
@@ -440,7 +489,13 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
             value = nome,
             onValueChange = { nome = it },
             modifier = Modifier.fillMaxWidth(),
-            label = { Text("Nome do Pet", fontSize = 22.sp, color = MaterialTheme.colorScheme.onBackground) }
+            label = {
+                Text(
+                    "Nome do Pet",
+                    fontSize = 22.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+            }
         )
 
         Surface(
@@ -480,7 +535,13 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     value = raca,
                     onValueChange = { raca = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Raça", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Raça",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 DropdownSelector(
@@ -494,7 +555,13 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     value = idade,
                     onValueChange = { idade = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Idade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Idade",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 DropdownSelector(
@@ -508,7 +575,13 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     value = cidade,
                     onValueChange = { cidade = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Cidade", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Cidade",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
             }
         }
@@ -568,14 +641,26 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                     value = email,
                     onValueChange = { email = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Email", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Email",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = telefone,
                     onValueChange = { telefone = it },
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Telefone", fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground) }
+                    label = {
+                        Text(
+                            "Telefone",
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 )
             }
         }
@@ -597,13 +682,11 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                         estado = estado,
                         cidade = cidade,
                         conta = it,
+                        foto = imageUri.toString(),
                     )
                 }
-
-                if (imageUri == null) {
-                    Toast.makeText(context, "Selecione uma imagem", Toast.LENGTH_SHORT).show()
-                }else{
-                    pet?.let { viewModel.updatePet(petId!!, it) }
+                if (pet != null) {
+                    viewModel.updatePet(petId!!, pet)
                 }
                 navController.navigate("principal")
             },

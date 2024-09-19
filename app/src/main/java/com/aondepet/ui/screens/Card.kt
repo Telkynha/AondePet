@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -26,11 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
@@ -40,6 +43,7 @@ import com.aondepet.ui.models.Pet
 @Composable
 fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
     var isFavorite by remember { mutableStateOf(false) }
+    val petImage by viewModel.getPetImage(pet.id!!).observeAsState()
 
     LaunchedEffect(pet.id) {
         viewModel.isFavorito(userId, pet.id!!).addOnSuccessListener { result ->
@@ -63,8 +67,17 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
+                val painter: Painter = if (petImage != null) {
+                    rememberAsyncImagePainter(
+                        model = petImage,
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    painterResource(R.drawable.img)
+                }
+
                 Image(
-                    painter = painterResource(R.drawable.img),
+                    painter = painter,
                     contentDescription = "Imagem do Pet ${pet.nome}",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -92,7 +105,9 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     contentDescription = "Ícone gênero",
                     tint = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.weight(0.8f))
+                if (authState == AuthState.Unauthenticated) {
+                    Spacer(modifier = Modifier.weight(0.8f))
+                }
                 Text(
                     text = pet.nome,
                     fontSize = 20.sp,
