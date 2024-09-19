@@ -92,6 +92,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     contentDescription = "Ícone gênero",
                     tint = MaterialTheme.colorScheme.primary
                 )
+                Spacer(modifier = Modifier.weight(0.8f))
                 Text(
                     text = pet.nome,
                     fontSize = 20.sp,
@@ -131,6 +132,8 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                             )
                         }
                     }
+                }else{
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
         }

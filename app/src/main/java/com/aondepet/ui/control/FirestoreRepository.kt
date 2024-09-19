@@ -7,6 +7,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
 
 class FirestoreRepository {
@@ -42,11 +43,6 @@ class FirestoreRepository {
             }
         }
     }
-
-    fun updateFavoritos(contaId: String, petId: String): Task<Void> {
-        return contasCollection.document(contaId).update("favoritos", FieldValue.arrayUnion(petId))
-    }
-
     fun addFavorito(contaId: String, petId: String): Task<Void> {
         return contasCollection.document(contaId).update("favoritos", FieldValue.arrayUnion(petId))
     }
@@ -93,22 +89,56 @@ class FirestoreRepository {
         animals: List<String> = emptyList(),
         generos: List<String> = emptyList(),
         portes: List<String> = emptyList(),
-        estados: List<String> = emptyList()
+        estados: List<String> = emptyList(),
+        status: List<String> = emptyList()
     ): Task<QuerySnapshot> {
-        var query = petsCollection
+        var query: Query? = null
+
         if (animals.isNotEmpty()) {
-            query = query.whereIn("animal", animals) as CollectionReference
+            query = if (query == null) {
+                petsCollection.whereIn("animal", animals)
+            } else {
+                query.whereIn("animal", animals)
+            }
         }
+
         if (generos.isNotEmpty()) {
-            query = query.whereIn("genero", generos) as CollectionReference
+            query = if (query == null) {
+                petsCollection.whereIn("genero", generos)
+            } else {
+                query.whereIn("genero", generos)
+            }
         }
+
         if (portes.isNotEmpty()) {
-            query = query.whereIn("porte", portes) as CollectionReference
+            query = if (query == null) {
+                petsCollection.whereIn("porte", portes)
+            } else {
+                query.whereIn("porte", portes)
+            }
         }
+
         if (estados.isNotEmpty()) {
-            query = query.whereIn("estado", estados) as CollectionReference
+            query = if (query == null) {
+                petsCollection.whereIn("estado", estados)
+            } else {
+                query.whereIn("estado", estados)
+            }
         }
-        return query.get()
+
+        if (status.isNotEmpty()) {
+            query = if (query == null) {
+                petsCollection.whereIn("status", status)
+            } else {
+                query.whereIn("status", status)
+            }
+        }
+
+        return if (query == null) {
+            petsCollection.get()
+        } else {
+            query.get()
+        }
     }
 
     fun getPetById(petId: String): Task<DocumentSnapshot> {

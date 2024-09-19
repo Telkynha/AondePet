@@ -34,8 +34,14 @@ class PetViewModel : ViewModel() {
     private val _pets = MutableLiveData<List<Pet>>()
     val pets: LiveData<List<Pet>> get() = _pets
 
-    private val _petsList = MutableLiveData<List<Pet>>()
+    private val _petsList = MutableLiveData<List<Pet>>() // Lista para os pets filtrados
     val petsList: LiveData<List<Pet>> get() = _petsList
+
+    private val _favoritos = MutableLiveData<List<String>>() // Lista de IDs dos pets favoritos
+    val favoritos: LiveData<List<String>> get() = _favoritos
+
+    private val _mostrarFavoritos = MutableLiveData<Boolean>(false) // Controla se o filtro de favoritos está ativo
+    val mostrarFavoritos: LiveData<Boolean> get() = _mostrarFavoritos
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -46,10 +52,13 @@ class PetViewModel : ViewModel() {
         _petData.value = Pet()
     }
 
+    // ========== METODOS - AUTENTICAÇÃO LOGIN/REGISTRO ==========
+
     fun checkAuthState() {
         if (authRepository.checkAuthState()) {
             _authState.value = AuthState.Authenticated
             _userId.value = authRepository.currentUserId
+            loadFavoritos() // Carregar favoritos ao autenticar
         } else {
             _authState.value = AuthState.Unauthenticated
             _userId.value = null
@@ -108,10 +117,6 @@ class PetViewModel : ViewModel() {
         firestoreRepository.addConta(contaId, conta)
     }
 
-    fun updateConta(contaId: String, updatedConta: Conta) {
-        firestoreRepository.updateConta(contaId, updatedConta)
-    }
-
     fun deleteConta() {
         _userId.value?.let {
             firestoreRepository.deleteConta(it)
@@ -126,10 +131,6 @@ class PetViewModel : ViewModel() {
 
     fun getFavoritos(contaId: String): Task<List<String>> {
         return firestoreRepository.getFavoritos(contaId)
-    }
-
-    fun updateFavoritos(contaId: String, petId: String): Task<Void> {
-        return firestoreRepository.updateFavoritos(contaId, petId)
     }
 
     fun favoritar(contaId: String, petId: String) {
@@ -156,6 +157,37 @@ class PetViewModel : ViewModel() {
         return firestoreRepository.isFavorito(contaId, petId)
     }
 
+    fun loadFavoritos() {
+        _userId.value?.let { contaId ->
+            firestoreRepository.getFavoritos(contaId)
+                .addOnSuccessListener { favoritosIds ->
+                    _favoritos.value = favoritosIds
+                    if (_mostrarFavoritos.value == true) {
+                        applyFavoritosFilter()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    _errorMessage.value = e.message
+                }
+        }
+    }
+
+    fun toggleFavoritosFilter() {
+        _mostrarFavoritos.value = _mostrarFavoritos.value?.not()
+        if (_mostrarFavoritos.value == true) {
+            applyFavoritosFilter()
+        } else {
+            _petsList.value = _pets.value // Mostrar todos os pets
+        }
+    }
+
+    private fun applyFavoritosFilter() {
+        val favoritosIds = _favoritos.value ?: emptyList()
+        val allPets = _pets.value ?: emptyList()
+        val filteredPets = allPets.filter { favoritosIds.contains(it.id) }
+        _petsList.value = filteredPets
+    }
+
     // ========== METODOS - PET ==========
 
     fun addPet(pet: Pet) {
@@ -173,6 +205,11 @@ class PetViewModel : ViewModel() {
             .addOnSuccessListener { querySnapshot ->
                 val petList = querySnapshot.toObjects(Pet::class.java)
                 _pets.value = petList
+                if (_mostrarFavoritos.value == true) {
+                    applyFavoritosFilter()
+                } else {
+                    _petsList.value = petList
+                }
             }
             .addOnFailureListener { e ->
                 _errorMessage.value = e.message
@@ -194,8 +231,6 @@ class PetViewModel : ViewModel() {
             }
     }
 
-    fun getPets() = firestoreRepository.getPets()
-
     fun updatePet(petId: String, updatedPet: Pet) {
         firestoreRepository.updatePet(petId, updatedPet)
         fetchPets()
@@ -206,21 +241,38 @@ class PetViewModel : ViewModel() {
         fetchPets()
     }
 
-    fun applyFilters(animals: List<Animal>, generos: List<Genero>, portes: List<Porte>, estados: List<Estado>, status: List<Status>) {
+    fun applyFilters(
+        animals: List<Animal> = emptyList(),
+        generos: List<Genero> = emptyList(),
+        portes: List<Porte> = emptyList(),
+        estados: List<Estado> = emptyList(),
+        status: List<Status> = emptyList()
+    ) {
         val animalsList = animals.map { it.name }
         val generosList = generos.map { it.name }
         val portesList = portes.map { it.name }
         val estadosList = estados.map { it.name }
         val statusList = status.map { it.name }
 
-        firestoreRepository.getPetsByFilters(animalsList, generosList, portesList, estadosList)
-            .addOnSuccessListener { querySnapshot ->
-                val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
-                _petsList.value = pets
-            }
-            .addOnFailureListener { exception ->
-                _errorMessage.value = exception.message
-            }
+        if (animalsList.isEmpty() && generosList.isEmpty() && portesList.isEmpty() && estadosList.isEmpty() && statusList.isEmpty()) {
+            firestoreRepository.getPetsByFilters()
+                .addOnSuccessListener { querySnapshot ->
+                    val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
+                    _petsList.value = pets
+                }
+                .addOnFailureListener { exception ->
+                    _errorMessage.value = exception.message
+                }
+        } else {
+            firestoreRepository.getPetsByFilters(animalsList, generosList, portesList, estadosList, statusList)
+                .addOnSuccessListener { querySnapshot ->
+                    val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
+                    _petsList.value = pets
+                }
+                .addOnFailureListener { exception ->
+                    _errorMessage.value = exception.message
+                }
+        }
     }
 
 }

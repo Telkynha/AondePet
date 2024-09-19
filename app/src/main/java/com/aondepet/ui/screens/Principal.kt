@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,14 +43,21 @@ import com.aondepet.ui.control.PetViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Principal(navController: NavController, viewModel: PetViewModel) {
-
-    val pets by viewModel.pets.observeAsState(emptyList())
     val petsList by viewModel.petsList.observeAsState(emptyList())
     val authState by viewModel.authState.observeAsState()
     val userId by viewModel.userId.observeAsState()
-
-
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.applyFilters(
+            animals = emptyList(),
+            generos = emptyList(),
+            portes = emptyList(),
+            estados = emptyList(),
+            status = emptyList()
+        )
+    }
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -121,19 +129,33 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                         }
                         SmallFloatingActionButton(
                             onClick = {
-
+                                viewModel.toggleFavoritosFilter()
                             },
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.secondary
+                            containerColor = if (viewModel.mostrarFavoritos.value == true)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = if (viewModel.mostrarFavoritos.value == true)
+                                MaterialTheme.colorScheme.onPrimary
+                            else
+                                MaterialTheme.colorScheme.secondary
                         ) {
-                            Icon(Icons.Filled.FavoriteBorder, "Filtrar favoritos")
+                            Icon(
+                                painter = if (viewModel.mostrarFavoritos.observeAsState().value == true)
+                                    painterResource(R.drawable.favorite_fill) // Ícone quando é favorito
+                                else
+                                    painterResource(R.drawable.favorite), // Ícone quando não é favorito
+                                contentDescription = "Filtrar favoritos",
+                                modifier = Modifier.size(24.dp)
+                            )
                         }
+
                     }
                 } // Autenticado
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
-                items(pets) { pet ->
+                items(petsList) { pet ->
                     authState?.let {
                         CardPet(
                             navController = navController,
