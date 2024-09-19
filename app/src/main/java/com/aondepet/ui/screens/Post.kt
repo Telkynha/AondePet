@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -48,6 +49,7 @@ import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
+import com.aondepet.ui.theme.Spacing
 
 @Composable
 fun Post(navController: NavController, viewModel: PetViewModel, petId: String? = ""){
@@ -237,73 +239,72 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
+                .padding(8.dp)
+                .wrapContentHeight(),
             shape = RoundedCornerShape(4.dp),
             color = MaterialTheme.colorScheme.primary
         ) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center // Centraliza os itens dentro da Row
                 ) {
-                    Text(
-                        text = "Animal: $animal",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Raça: $raca",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                } // Column que segura a primeira coluna de dados do Pet
-                Column(
-                    modifier = Modifier
-                        .weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Porte: $porte",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Idade: $idade anos",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                }
-            } //Row que possui as duas columns
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Estado: $estado",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
-                    Text(
-                        text = "Cidade: $cidade",
-                        fontSize = 16.sp,
-                        color = Color.White
-                    )
+                    // Primeira Coluna
+                    Column(
+                        modifier = Modifier
+                            .weight(1f), // Espaçamento entre colunas
+                        horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                    ) {
+                        Text(
+                            text = "Animal: $animal",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Raça: $raca",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Cidade: $cidade",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
+
+                    // Segunda Coluna
+                    Column(
+                        modifier = Modifier
+                            .weight(1f), // Espaçamento entre colunas
+                        horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                    ) {
+                        Text(
+                            text = "Porte: $porte",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Idade: $idade anos",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                        Text(
+                            text = "Estado: $estado",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
                 }
             }
-        } // Surface roxa para dados Pet
+        }
 
         Surface(
             modifier = Modifier
