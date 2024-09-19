@@ -279,6 +279,13 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         color = Color.White
                     )
                 }
+            } //Row que possui as duas columns
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column(
                     modifier = Modifier
                         .weight(1f),
@@ -294,8 +301,8 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         fontSize = 16.sp,
                         color = Color.White
                     )
-                }// Column que segura a segunda coluna de dados do Pet
-            } //Row que possui as duas columns
+                }
+            }
         } // Surface roxa para dados Pet
 
         Surface(

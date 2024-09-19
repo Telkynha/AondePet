@@ -1,11 +1,5 @@
 package com.aondepet.ui.screens
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,26 +9,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,281 +31,120 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
-import com.aondepet.ui.models.Genero
-import com.aondepet.ui.models.Pet
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Principal(navController: NavController, viewModel: PetViewModel) {
 
     val pets by viewModel.pets.observeAsState(emptyList())
+    val petsList by viewModel.petsList.observeAsState(emptyList())
     val authState by viewModel.authState.observeAsState()
     val userId by viewModel.userId.observeAsState()
 
-    Surface(
-        modifier = Modifier
-            .height(80.dp)
-            .fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Spacer(modifier = Modifier.width(24.dp))
-            Text(
-                text = "Aonde Pet",
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .weight(1f)
-            )
-            IconButton(
-                onClick = { navController.navigate("conta") },
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Icone menu",
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        } // Row icones topo
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            OutlinedTextField(
-                value = "",
-                onValueChange = { it },
-                label = { Text("Pesquisar", color = MaterialTheme.colorScheme.onSurface) },
-                modifier = Modifier
-                    .padding(top = 80.dp)
-                    .fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    focusedLabelColor = MaterialTheme.colorScheme.primary,
-                    cursorColor = MaterialTheme.colorScheme.primary
-                )
-            )
-        }
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(35.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Text(text = "Adotar", color = Color.White)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(35.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Text(text = "Encontrar", color = Color.White)
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(35.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Text(text = "Ajudar", color = Color.White)
-            }
-        } // Row com os botões de filtro
-        Spacer(modifier = Modifier.height(24.dp))
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Pets",
-                fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier
-                    .padding(start = 8.dp)
-            )
-            if (authState == AuthState.Authenticated) {
-                Row {
-                    SmallFloatingActionButton(
-                        onClick = {
-                            navController.navigate("postFormularioNovo")
-                        },
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Aonde Pet",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                actions = {
+                    IconButton(
+                        onClick = { navController.navigate("conta") },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
                     ) {
-                        Icon(Icons.Filled.Add, "Adicionar Post Pet")
+                        Icon(
+                            painter = painterResource(R.drawable.account_icon),
+                            contentDescription = "Icone menu",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                    SmallFloatingActionButton(
-                        onClick = {
-
-                        },
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        contentColor = MaterialTheme.colorScheme.secondary
-                    ) {
-                        Icon(Icons.Filled.FavoriteBorder, "Filtrar favoritos")
-                    }
-                }
-            } // Autenticado
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                text = { Text("Filtros") },
+                icon = { Icon(painterResource(R.drawable.search), contentDescription = "Filtrar") },
+                onClick = { showBottomSheet = true }
+            )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        LazyColumn {
-            items(pets) { pet ->
-                authState?.let { CardPet(navController = navController, pet = pet, authState = it, viewModel = viewModel, userId = userId.toString()) }
-            }
-        }
-    } // Fim da coluna
-}
-
-@Composable
-fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
-    var isFavorite by remember { mutableStateOf(false) }
-
-    LaunchedEffect(pet.id) {
-        viewModel.isFavorito(userId, pet.id!!).addOnSuccessListener { result ->
-            isFavorite = result
-        }
-    }
-    Surface(
-        onClick = { navController.navigate("post/${pet.id}") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-        shape = RoundedCornerShape(4.dp),
-        color = Color.Transparent
-    ) {
-        Column {
+    ) { innerPadding ->
+        FilterBottomSheet(showBottomSheet, { showBottomSheet = false }, viewModel::applyFilters)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Row(
                 modifier = Modifier
+                    .padding(horizontal = 8.dp, vertical = 16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                Image(
-                    painter = painterResource(R.drawable.img),
-                    contentDescription = "Imagem do Pet ${pet.nome}",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(128.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-                )
-
-            } // Row com a imagem do pet
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                val generoIcon = when (pet.genero) {
-                    Genero.Macho -> R.drawable.male
-                    Genero.Femea -> R.drawable.female
-                    else -> R.drawable.question_mark
-                }
-                Icon(
-                    painter = painterResource(generoIcon),
-                    contentDescription = "Ícone gênero",
-                    tint = MaterialTheme.colorScheme.primary
-                )
                 Text(
-                    text = pet.nome,
-                    fontSize = 20.sp,
+                    text = "Pets",
+                    fontSize = 22.sp,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
+                        .padding(start = 8.dp)
                 )
                 if (authState == AuthState.Authenticated) {
-                    if (pet.conta == userId) {
-                        IconButton(
-                            onClick = { navController.navigate("postFormularioAlterar/${pet.id}") }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.edit),
-                                contentDescription = "Ícone alterar post animal",
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            modifier = Modifier.padding(0.dp),
+                    Row {
+                        SmallFloatingActionButton(
                             onClick = {
-                                pet.id?.let { petId ->
-                                    viewModel.favoritar(userId, petId)
-                                    viewModel.isFavorito(userId, petId)
-                                        .addOnSuccessListener { result ->
-                                            isFavorite = result
-                                        }
-                                }
-                            }
+                                navController.navigate("postFormularioNovo")
+                            },
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.secondary
                         ) {
-                            Icon(
-                                painter = painterResource(if (isFavorite) R.drawable.favorite_fill else R.drawable.favorite),
-                                contentDescription = "Ícone favoritar animal",
-                                tint = MaterialTheme.colorScheme.secondary,
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Icon(Icons.Filled.Add, "Adicionar Post Pet")
                         }
+                        SmallFloatingActionButton(
+                            onClick = {
+
+                            },
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = MaterialTheme.colorScheme.secondary
+                        ) {
+                            Icon(Icons.Filled.FavoriteBorder, "Filtrar favoritos")
+                        }
+                    }
+                } // Autenticado
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            LazyColumn {
+                items(pets) { pet ->
+                    authState?.let {
+                        CardPet(
+                            navController = navController,
+                            pet = pet,
+                            authState = it,
+                            viewModel = viewModel,
+                            userId = userId.toString()
+                        )
                     }
                 }
             }
-        }
+        } // Fim da coluna
     }
-    Spacer(modifier = Modifier.height(24.dp))
 }

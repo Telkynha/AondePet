@@ -2,6 +2,7 @@ import android.net.Uri
 import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
@@ -88,8 +89,26 @@ class FirestoreRepository {
         return petsCollection.document(petId).delete()
     }
 
-    fun getPetsByField(fieldName: String, value: String): Task<QuerySnapshot> {
-        return petsCollection.whereEqualTo(fieldName, value).get()
+    fun getPetsByFilters(
+        animals: List<String> = emptyList(),
+        generos: List<String> = emptyList(),
+        portes: List<String> = emptyList(),
+        estados: List<String> = emptyList()
+    ): Task<QuerySnapshot> {
+        var query = petsCollection
+        if (animals.isNotEmpty()) {
+            query = query.whereIn("animal", animals) as CollectionReference
+        }
+        if (generos.isNotEmpty()) {
+            query = query.whereIn("genero", generos) as CollectionReference
+        }
+        if (portes.isNotEmpty()) {
+            query = query.whereIn("porte", portes) as CollectionReference
+        }
+        if (estados.isNotEmpty()) {
+            query = query.whereIn("estado", estados) as CollectionReference
+        }
+        return query.get()
     }
 
     fun getPetById(petId: String): Task<DocumentSnapshot> {

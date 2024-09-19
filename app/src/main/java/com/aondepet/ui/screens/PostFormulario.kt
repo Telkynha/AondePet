@@ -210,10 +210,10 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 DropdownSelector(
-                    label = "Porte",
-                    options = Porte.entries,
-                    selectedOption = porte.toString(),
-                    onOptionSelected = { porte = it as Porte }
+                    label = "Estado",
+                    options = Estado.entries,
+                    selectedOption = estado.toString(),
+                    onOptionSelected = { estado = it as Estado }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(
@@ -498,10 +498,10 @@ fun PostFormularioAlterar(navController: NavController, viewModel: PetViewModel,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 DropdownSelector(
-                    label = "Porte",
-                    options = Porte.entries,
-                    selectedOption = porte.toString(),
-                    onOptionSelected = { porte = it as Porte }
+                    label = "Estado",
+                    options = Estado.entries,
+                    selectedOption = estado.toString(),
+                    onOptionSelected = { estado = it as Estado }
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 OutlinedTextField(

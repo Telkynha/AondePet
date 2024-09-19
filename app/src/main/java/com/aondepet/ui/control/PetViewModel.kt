@@ -7,8 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.aondepet.ui.models.Animal
 import com.aondepet.ui.models.Conta
+import com.aondepet.ui.models.Estado
+import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
+import com.aondepet.ui.models.Porte
+import com.aondepet.ui.models.Status
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
 
@@ -201,8 +206,14 @@ class PetViewModel : ViewModel() {
         fetchPets()
     }
 
-    fun fetchPetsByField(fieldName: String, value: String) {
-        firestoreRepository.getPetsByField(fieldName, value)
+    fun applyFilters(animals: List<Animal>, generos: List<Genero>, portes: List<Porte>, estados: List<Estado>, status: List<Status>) {
+        val animalsList = animals.map { it.name }
+        val generosList = generos.map { it.name }
+        val portesList = portes.map { it.name }
+        val estadosList = estados.map { it.name }
+        val statusList = status.map { it.name }
+
+        firestoreRepository.getPetsByFilters(animalsList, generosList, portesList, estadosList)
             .addOnSuccessListener { querySnapshot ->
                 val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
                 _petsList.value = pets

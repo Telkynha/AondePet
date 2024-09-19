@@ -5,7 +5,6 @@ enum class Status {
     Encontrado,
     Adotar,
     Adotado,
-    Doente,
-    Machucado,
+    Outro,
     Tratado
 }
