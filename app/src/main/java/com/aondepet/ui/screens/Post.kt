@@ -19,9 +19,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,8 +57,9 @@ import com.aondepet.ui.models.Status
 import com.aondepet.ui.theme.Spacing
 import java.net.URI
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Post(navController: NavController, viewModel: PetViewModel, petId: String? = ""){
+fun Post(navController: NavController, viewModel: PetViewModel, petId: String? = "") {
 
     var pet by remember { mutableStateOf<Pet?>(null) }
     var nome by remember { mutableStateOf("") }
@@ -111,308 +115,322 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_back),
-                    contentDescription = "Icone seta voltar",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            Text(
-                text = "Post",
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .weight(1f)
-            )
-            IconButton(
-                onClick = { navController.navigate("conta") },
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Icone menu",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        } // Row icones topo
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "$nome",
-                fontSize = 22.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Status: $status",
-                fontSize = 20.sp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        } // Row textos: Nome e Status
-
-
-        if(petImage != null){
-            AsyncImage(
-                model = petImage,
-                contentDescription = "Imagem do Pet",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-            )
-        }else{
-            Image(
-                painter = painterResource(R.drawable.img),
-                contentDescription = "Imagem Pet",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-            )
-        }
-
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            val generoIcon = when (genero) {
-                Genero.Macho -> R.drawable.male
-                Genero.Femea -> R.drawable.female
-                else -> R.drawable.question_mark
-            }
-            Icon(
-                painter = painterResource(generoIcon),
-                contentDescription = "Ícone gênero",
-                tint = MaterialTheme.colorScheme.primary
-            )
-            if (authState.value == AuthState.Authenticated) {
-                if (conta == userId) {
-                    IconButton(
-                        onClick = { navController.navigate("postFormularioAlterar/${petId}") }
-                    ) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Pet",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            painter = painterResource(R.drawable.edit),
-                            contentDescription = "Ícone alterar post animal",
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(24.dp)
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Voltar",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                } else {
+                },
+                actions = {
                     IconButton(
-                        modifier = Modifier.padding(0.dp),
-                        onClick = {
-                            petId?.let { petId ->
-                                userId?.let { viewModel.favoritar(it, petId) }
-                                userId?.let {
-                                    viewModel.isFavorito(it, petId)
-                                        .addOnSuccessListener { result ->
-                                            isFavorite = result
-                                        }
+                        onClick = { navController.navigate("conta") },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.account_icon),
+                            contentDescription = "Icone menu",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        }
+    ) { paddingValues ->
+        // Conteúdo da tela
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(Spacing.large)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "$nome",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "Status: $status",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            } // Row textos: Nome e Status
+
+            if (petImage != null) {
+                AsyncImage(
+                    model = petImage,
+                    contentDescription = "Imagem do Pet",
+                    modifier = Modifier
+                        .padding(vertical = Spacing.medium)
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.img),
+                    contentDescription = "Imagem Pet",
+                    modifier = Modifier
+                        .padding(vertical = Spacing.medium)
+                        .fillMaxWidth()
+                        .height(300.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                val generoIcon = when (genero) {
+                    Genero.Macho -> R.drawable.male
+                    Genero.Femea -> R.drawable.female
+                    else -> R.drawable.question_mark
+                }
+                Icon(
+                    painter = painterResource(generoIcon),
+                    contentDescription = "Ícone gênero",
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(Spacing.large)
+                )
+                if (authState.value == AuthState.Authenticated) {
+                    if (conta == userId) {
+                        IconButton(
+                            onClick = { navController.navigate("postFormularioAlterar/${petId}") }
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.edit),
+                                contentDescription = "Ícone alterar post animal",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(Spacing.large)
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            modifier = Modifier.padding(0.dp),
+                            onClick = {
+                                petId?.let { petId ->
+                                    userId?.let { viewModel.favoritar(it, petId) }
+                                    userId?.let {
+                                        viewModel.isFavorito(it, petId)
+                                            .addOnSuccessListener { result ->
+                                                isFavorite = result
+                                            }
+                                    }
                                 }
                             }
+                        ) {
+                            Icon(
+                                painter = painterResource(if (isFavorite) R.drawable.favorite_fill else R.drawable.favorite),
+                                contentDescription = "Ícone favoritar animal",
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(Spacing.large)
+                            )
                         }
+                    }
+                }
+            } // Row icone gênero e Coração
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.medium)
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(4.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = Spacing.medium),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center // Centraliza os itens dentro da Row
                     ) {
-                        Icon(
-                            painter = painterResource(if (isFavorite) R.drawable.favorite_fill else R.drawable.favorite),
-                            contentDescription = "Ícone favoritar animal",
-                            tint = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.size(24.dp)
-                        )
+                        // Primeira Coluna
+                        Column(
+                            modifier = Modifier
+                                .weight(1f), // Espaçamento entre colunas
+                            horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                        ) {
+                            Text(
+                                text = "Animal: $animal",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Raça: $raca",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+
+                        // Segunda Coluna
+                        Column(
+                            modifier = Modifier
+                                .weight(1f), // Espaçamento entre colunas
+                            horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                        ) {
+                            Text(
+                                text = "Porte: $porte",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = "Idade: $idade anos",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     }
                 }
             }
-        } // Row icone gênero e Coração
 
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(4.dp),
-            color = MaterialTheme.colorScheme.primary
-        ) {
-            Column(
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .padding(vertical = Spacing.small)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
+                shape = RoundedCornerShape(4.dp),
+                color = Color.Transparent
             ) {
-                Row(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center // Centraliza os itens dentro da Row
+                        .padding(Spacing.medium)
+                        .fillMaxWidth()
                 ) {
-                    // Primeira Coluna
-                    Column(
+                    Row(
                         modifier = Modifier
-                            .weight(1f), // Espaçamento entre colunas
-                        horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                            .padding(bottom = Spacing.small)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Animal: $animal",
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Raça: $raca",
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                        Text(
-                            text = "Cidade: $cidade",
-                            fontSize = 16.sp,
-                            color = Color.White
+                            text = "Descrição",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
-
-                    // Segunda Coluna
-                    Column(
+                    Row(
                         modifier = Modifier
-                            .weight(1f), // Espaçamento entre colunas
-                        horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Porte: $porte",
-                            fontSize = 16.sp,
-                            color = Color.White
+                            text = "$descricao",
+                            textAlign = TextAlign.Justify,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                    }
+                } //Coluna para ajeitar descrição
+            } //Fim Surface de descrição
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.small)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
+                shape = RoundedCornerShape(4.dp),
+                color = Color.Transparent
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(Spacing.medium)
+                        .fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .padding(bottom = Spacing.small)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         Text(
-                            text = "Idade: $idade anos",
-                            fontSize = 16.sp,
-                            color = Color.White
+                            text = "Contato",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
+                    }
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = "Email: $email",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = "Telefone: $telefone",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
                         Text(
                             text = "Estado: $estado",
-                            fontSize = 16.sp,
-                            color = Color.White
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                }
-            }
-        }
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shape = RoundedCornerShape(4.dp),
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Descrição",
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "$descricao",
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Justify,
-                        modifier = Modifier.padding(top = 8.dp),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            } //Coluna para ajeitar descrição
-        } //Fim Surface de descrição
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shape = RoundedCornerShape(4.dp),
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Contato",
-                        fontSize = 20.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "Email: $email",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                ) {
-                    Text(
-                        text = "Telefone: $telefone",
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            } //Coluna para ajeitar contato
-        } //Fim Surface de Contato
-    } // Fim Column Principal
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        Text(
+                            text = "Cidade: $cidade",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                } //Coluna para ajeitar contato
+            } //Fim Surface de Contato
+        } // Fim Column Principal
+    }
 }

@@ -1,7 +1,7 @@
 package com.aondepet.ui.models
 
 data class Pet(
-    var id: String? = null,
+    var id: String = "",
     val nome: String = "",
     val animal: Animal = Animal.Outro,
     val raca: String = "",

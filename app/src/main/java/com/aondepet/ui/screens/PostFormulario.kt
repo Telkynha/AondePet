@@ -1,38 +1,39 @@
 package com.aondepet.ui.screens
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,7 +47,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -62,8 +62,9 @@ import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
-import java.net.URI
+import com.aondepet.ui.theme.Spacing
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 
@@ -86,286 +87,288 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             imageUri = uri
         }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_back),
-                    contentDescription = "Ícone seta voltar",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            Text(
-                text = "Novo Pet",
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.weight(1f)
-            )
-            IconButton(
-                onClick = { navController.navigate("conta") },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Ícone menu",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        val painter: Painter = if (imageUri != null) {
-            rememberAsyncImagePainter(
-                model = imageUri, // Use a URI de conteúdo diretamente
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            painterResource(R.drawable.img)
-        }
-
-        Image(painter = painter, contentDescription = "Imagem Pet",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .clickable {
-                    launcher.launch("image/*")
-                }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = nome,
-            onValueChange = { nome = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text(
-                    "Nome do Pet",
-                    fontSize = 22.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-        )
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp),
-            shape = RoundedCornerShape(4.dp),
-            color = MaterialTheme.colorScheme.primaryContainer
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-            ) {
-                DropdownSelector(
-                    label = "Status",
-                    options = Status.entries,
-                    selectedOption = status,
-                    onOptionSelected = { status = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Animal",
-                    options = Animal.entries,
-                    selectedOption = animal,
-                    onOptionSelected = { animal = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Gênero",
-                    options = Genero.entries,
-                    selectedOption = genero,
-                    onOptionSelected = { genero = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = raca,
-                    onValueChange = { raca = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Raça",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Porte",
-                    options = Porte.entries,
-                    selectedOption = porte,
-                    onOptionSelected = { porte = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = idade,
-                    onValueChange = { idade = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Idade",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Estado",
-                    options = Estado.entries,
-                    selectedOption = estado.toString(),
-                    onOptionSelected = { estado = it as Estado }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = cidade,
-                    onValueChange = { cidade = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Cidade",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-            }
-        }
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shape = RoundedCornerShape(4.dp),
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = "Descrição",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = descricao,
-                    onValueChange = { descricao = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shape = RoundedCornerShape(4.dp),
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = "Contato",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Email",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = telefone,
-                    onValueChange = { telefone = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Telefone",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-            }
-        }
-
-        Button(
-            onClick = {
-                if (userId != null) {
-                    val pet = Pet(
-                        nome = nome,
-                        raca = raca,
-                        genero = genero,
-                        idade = idade.toIntOrNull() ?: 0,
-                        descricao = descricao,
-                        status = status,
-                        animal = animal,
-                        porte = porte,
-                        email = email,
-                        telefone = telefone,
-                        estado = estado,
-                        cidade = cidade,
-                        conta = userId!!,
-                        foto = imageUri.toString()
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Novo Pet",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge
                     )
-
-                    viewModel.addPet(pet)
-                    navController.navigate("principal")
-                }
-            },
-            modifier = Modifier.fillMaxWidth()
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Voltar",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { navController.navigate("conta") },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.account_icon),
+                            contentDescription = "Icone menu",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(Spacing.medium)
+                .verticalScroll(rememberScrollState()),
         ) {
-            Text(text = "Adicionar", color = MaterialTheme.colorScheme.onPrimary)
+            Text(
+                text = "Detalhes do pet:", style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+            Spacer(modifier = Modifier.height(Spacing.medium))
+            DropdownSelector(
+                label = "Status",
+                options = Status.entries,
+                selectedOption = status,
+                onOptionSelected = { status = it }
+            )
+            val painter: Painter = if (imageUri != null) {
+                rememberAsyncImagePainter(
+                    model = imageUri,
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                painterResource(R.drawable.img)
+            }
+            Image(painter = painter, contentDescription = "Imagem Pet",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .padding(vertical = Spacing.medium)
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                    .clickable {
+                        launcher.launch("image/*")
+                    }
+            )
+            OutlinedTextField(
+                value = nome,
+                onValueChange = { nome = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        "Nome do Pet",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            DropdownSelector(
+                label = "Animal",
+                options = Animal.entries,
+                selectedOption = animal,
+                onOptionSelected = { animal = it }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            OutlinedTextField(
+                value = raca,
+                onValueChange = { raca = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        "Raça",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            DropdownSelector(
+                label = "Porte",
+                options = Porte.entries,
+                selectedOption = porte,
+                onOptionSelected = { porte = it }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            OutlinedTextField(
+                value = idade,
+                onValueChange = { idade = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        "Idade",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            DropdownSelector(
+                label = "Gênero",
+                options = Genero.entries,
+                selectedOption = genero,
+                onOptionSelected = { genero = it }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.small)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
+                shape = RoundedCornerShape(4.dp),
+                color = Color.Transparent
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(Spacing.medium)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Descrição",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextField(
+                        value = descricao,
+                        onValueChange = { descricao = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+            }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.small)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
+                shape = RoundedCornerShape(4.dp),
+                color = Color.Transparent
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(Spacing.medium)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Contato", style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                "Email",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    OutlinedTextField(
+                        value = telefone,
+                        onValueChange = { telefone = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                "Telefone",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    DropdownSelector(
+                        label = "Estado",
+                        options = Estado.entries,
+                        selectedOption = estado.toString(),
+                        onOptionSelected = { estado = it as Estado }
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    OutlinedTextField(
+                        value = cidade,
+                        onValueChange = { cidade = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                "Cidade",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(Spacing.small))
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                onClick = {
+                    if (userId != null) {
+                        val pet = Pet(
+                            nome = nome,
+                            raca = raca,
+                            genero = genero,
+                            idade = idade.toIntOrNull() ?: 0,
+                            descricao = descricao,
+                            status = status,
+                            animal = animal,
+                            porte = porte,
+                            email = email,
+                            telefone = telefone,
+                            estado = estado,
+                            cidade = cidade,
+                            conta = userId!!,
+                            foto = imageUri.toString()
+                        )
+
+                        viewModel.addPet(pet)
+                        navController.navigate("principal")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Adicionar", color = MaterialTheme.colorScheme.onPrimary)
+            }
         }
     }
+
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostFormularioAlterar(
     navController: NavController,
@@ -373,7 +376,6 @@ fun PostFormularioAlterar(
     petId: String? = ""
 ) {
 
-    // Pet mockado
     var pet by remember { mutableStateOf<Pet?>(null) }
 
     var nome by remember { mutableStateOf("") }
@@ -389,7 +391,7 @@ fun PostFormularioAlterar(
     var estado by remember { mutableStateOf(Estado.AC) }
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
-    var imageUri by remember { mutableStateOf<Uri?>(viewModel.getPetImage(petId!!).value ?: null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             imageUri = uri
@@ -415,301 +417,300 @@ fun PostFormularioAlterar(
             }
         }
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_back),
-                    contentDescription = "Ícone seta voltar",
-                    tint = MaterialTheme.colorScheme.primary
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Alterar Pet",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Voltar",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { navController.navigate("conta") },
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.account_icon),
+                            contentDescription = "Icone menu",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
-            }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(Spacing.medium)
+                .verticalScroll(rememberScrollState()),
+        ) {
             Text(
-                text = "Alterar Pet",
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.weight(1f)
+                text = "Detalhes do pet:", style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Start
             )
-            IconButton(
-                onClick = { navController.navigate("conta") },
-                modifier = Modifier.align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Ícone menu",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        }
-
-        val painter: Painter = if (imageUri != null) {
-            rememberAsyncImagePainter(
-                model = imageUri, // Use a URI de conteúdo diretamente
-                contentScale = ContentScale.Crop
+            Spacer(modifier = Modifier.height(Spacing.medium))
+            DropdownSelector(
+                label = "Status",
+                options = Status.entries,
+                selectedOption = status,
+                onOptionSelected = { status = it }
             )
-        } else {
-            painterResource(R.drawable.img)
-        }
-
-        Image(painter = painter, contentDescription = "Imagem Pet",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(300.dp)
-                .padding(horizontal = 8.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(4.dp))
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(4.dp)
+            val painter: Painter = if (imageUri != null) {
+                rememberAsyncImagePainter(
+                    model = imageUri,
+                    contentScale = ContentScale.Crop
                 )
-                .clickable {
-                    launcher.launch("image/*")
-                }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = nome,
-            onValueChange = { nome = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = {
-                Text(
-                    "Nome do Pet",
-                    fontSize = 22.sp,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
+            } else {
+                painterResource(R.drawable.img)
             }
-        )
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp),
-            shape = RoundedCornerShape(4.dp),
-            color = MaterialTheme.colorScheme.primaryContainer
-        ) {
-            Column(
+            Image(painter = painter, contentDescription = "Imagem Pet",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
+                    .padding(vertical = Spacing.medium)
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-            ) {
-                DropdownSelector(
-                    label = "Status",
-                    options = Status.entries,
-                    selectedOption = status,
-                    onOptionSelected = { status = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Animal",
-                    options = Animal.entries,
-                    selectedOption = animal,
-                    onOptionSelected = { animal = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Gênero",
-                    options = Genero.entries,
-                    selectedOption = genero,
-                    onOptionSelected = { genero = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = raca,
-                    onValueChange = { raca = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Raça",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
+                    .height(300.dp)
+                    .clip(RoundedCornerShape(4.dp))
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                    .clickable {
+                        launcher.launch("image/*")
                     }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Porte",
-                    options = Porte.entries,
-                    selectedOption = porte,
-                    onOptionSelected = { porte = it }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = idade,
-                    onValueChange = { idade = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Idade",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                DropdownSelector(
-                    label = "Estado",
-                    options = Estado.entries,
-                    selectedOption = estado.toString(),
-                    onOptionSelected = { estado = it as Estado }
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                OutlinedTextField(
-                    value = cidade,
-                    onValueChange = { cidade = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Cidade",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-            }
-        }
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shape = RoundedCornerShape(4.dp),
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = "Descrição",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                TextField(
-                    value = descricao,
-                    onValueChange = { descricao = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 16.dp)
-                .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
-            shape = RoundedCornerShape(4.dp),
-            color = Color.Transparent
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = "Contato",
-                    fontSize = 20.sp,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Email",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = telefone,
-                    onValueChange = { telefone = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = {
-                        Text(
-                            "Telefone",
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                )
-            }
-        }
-
-        Button(
-            onClick = {
-                val pet = userId?.let {
-                    Pet(
-                        nome = nome,
-                        raca = raca,
-                        genero = genero,
-                        idade = idade.toIntOrNull() ?: 0,
-                        descricao = descricao,
-                        status = status,
-                        animal = animal,
-                        porte = porte,
-                        email = email,
-                        telefone = telefone,
-                        estado = estado,
-                        cidade = cidade,
-                        conta = it,
-                        foto = imageUri.toString(),
+            )
+            OutlinedTextField(
+                value = nome,
+                onValueChange = { nome = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        "Nome do Pet",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
-                if (pet != null) {
-                    viewModel.updatePet(petId!!, pet)
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            DropdownSelector(
+                label = "Animal",
+                options = Animal.entries,
+                selectedOption = animal,
+                onOptionSelected = { animal = it }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            OutlinedTextField(
+                value = raca,
+                onValueChange = { raca = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        "Raça",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
-                navController.navigate("principal")
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Alterar", color = MaterialTheme.colorScheme.onPrimary)
-        }
-        Button(
-            colors = ButtonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError,
-                disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
-            ),
-            onClick = {
-                viewModel.deletePet(petId!!)
-                navController.navigate("principal") {
-                    popUpTo("postFormularioAlterar") { inclusive = true }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            DropdownSelector(
+                label = "Porte",
+                options = Porte.entries,
+                selectedOption = porte,
+                onOptionSelected = { porte = it }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            OutlinedTextField(
+                value = idade,
+                onValueChange = { idade = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = {
+                    Text(
+                        "Idade",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = "Excluir")
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            DropdownSelector(
+                label = "Gênero",
+                options = Genero.entries,
+                selectedOption = genero,
+                onOptionSelected = { genero = it }
+            )
+            Spacer(modifier = Modifier.height(Spacing.small))
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.small)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
+                shape = RoundedCornerShape(4.dp),
+                color = Color.Transparent
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(Spacing.medium)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Descrição",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextField(
+                        value = descricao,
+                        onValueChange = { descricao = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                            errorIndicatorColor = Color.Transparent
+                        )
+                    )
+                }
+            }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = Spacing.small)
+                    .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
+                shape = RoundedCornerShape(4.dp),
+                color = Color.Transparent
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(Spacing.medium)
+                        .fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Contato", style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                "Email",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    OutlinedTextField(
+                        value = telefone,
+                        onValueChange = { telefone = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                "Telefone",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    DropdownSelector(
+                        label = "Estado",
+                        options = Estado.entries,
+                        selectedOption = estado.toString(),
+                        onOptionSelected = { estado = it as Estado }
+                    )
+                    Spacer(modifier = Modifier.height(Spacing.small))
+                    OutlinedTextField(
+                        value = cidade,
+                        onValueChange = { cidade = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = {
+                            Text(
+                                "Cidade",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(Spacing.small))
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                onClick = {
+                    val pet = userId?.let {
+                        Pet(
+                            nome = nome,
+                            raca = raca,
+                            genero = genero,
+                            idade = idade.toIntOrNull() ?: 0,
+                            descricao = descricao,
+                            status = status,
+                            animal = animal,
+                            porte = porte,
+                            email = email,
+                            telefone = telefone,
+                            estado = estado,
+                            cidade = cidade,
+                            conta = it,
+                            foto = imageUri.toString(),
+                        )
+                    }
+                    if (pet != null) {
+                        viewModel.updatePet(petId!!, pet)
+                    }
+                    navController.navigate("principal")
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Alterar", color = MaterialTheme.colorScheme.onPrimary)
+            }
+            Button(
+                colors = ButtonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
+                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
+                ),
+                onClick = {
+                    viewModel.deletePet(petId!!)
+                    navController.navigate("principal") {
+                        popUpTo("postFormularioAlterar") { inclusive = true }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(text = "Excluir")
+            }
         }
     }
 }

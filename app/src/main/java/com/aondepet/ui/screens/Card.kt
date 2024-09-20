@@ -39,6 +39,7 @@ import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
 import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Pet
+import com.aondepet.ui.theme.Spacing
 
 @Composable
 fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
@@ -54,8 +55,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
         onClick = { navController.navigate("post/${pet.id}") },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
+            .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
         shape = RoundedCornerShape(4.dp),
         color = Color.Transparent
     ) {
@@ -82,15 +82,15 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(128.dp)
+                        .height(200.dp)
                         .clip(RoundedCornerShape(4.dp))
-                        .border(2.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+                        .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                 )
 
             } // Row com a imagem do pet
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
+                    .padding(Spacing.small)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -103,14 +103,14 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 Icon(
                     painter = painterResource(generoIcon),
                     contentDescription = "Ícone gênero",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
                 if (authState == AuthState.Unauthenticated) {
                     Spacer(modifier = Modifier.weight(0.8f))
                 }
                 Text(
                     text = pet.nome,
-                    fontSize = 20.sp,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )

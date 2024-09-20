@@ -12,12 +12,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,9 +45,11 @@ import androidx.navigation.NavController
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.theme.Spacing
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Login(navController: NavController, viewModel: PetViewModel){
+fun Login(navController: NavController, viewModel: PetViewModel) {
 
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
@@ -50,119 +58,118 @@ fun Login(navController: NavController, viewModel: PetViewModel){
     val context = LocalContext.current
 
     LaunchedEffect(authState.value) {
-        when(authState.value) {
+        when (authState.value) {
             is AuthState.Authenticated -> navController.navigate("principal")
-            is AuthState.Error -> Toast.makeText(context, (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT).show()
+            is AuthState.Error -> Toast.makeText(
+                context,
+                (authState.value as AuthState.Error).message,
+                Toast.LENGTH_SHORT
+            ).show()
+
             else -> Unit
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            IconButton(
-                onClick = { navController.navigate("principal") },
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_back),
-                    contentDescription = "Icone seta voltar",
-                    tint = MaterialTheme.colorScheme.primary
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Login",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.navigate("Principal") }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Voltar",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
+                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
-
-            }
-            Text(
-                text = "Aonde Pet",
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier
-                    .weight(1f)
             )
         }
+    ) { paddingValues ->
+        // Conteúdo da tela
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(Spacing.medium)
+                .verticalScroll(rememberScrollState()),
         ) {
             Icon(
-                painter = painterResource(R.drawable.pet),
+                painter = painterResource(R.drawable.ic_launcher_foreground),
                 contentDescription = "Icone do AondePet",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
-                    .size(250.dp)
+                    .size(300.dp)
             )
-            Column(
+            OutlinedTextField(
+                value = email,
+                onValueChange = { email = it },
+                label = { Text("Email", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyLarge) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+            Spacer(modifier = Modifier.height(Spacing.medium))
+            OutlinedTextField(
+                value = senha,
+                onValueChange = { senha = it },
+                label = { Text("Senha", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyLarge) },
+                visualTransformation = PasswordVisualTransformation(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary
+                )
+            )
+            Spacer(modifier = Modifier.height(Spacing.extraLarge))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxWidth(),
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Email", color = MaterialTheme.colorScheme.onSurface) },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = senha,
-                    onValueChange = { senha = it },
-                    label = { Text("Senha", color = MaterialTheme.colorScheme.onSurface) },
-                    visualTransformation = PasswordVisualTransformation(),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        cursorColor = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Esqueci a senha",
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .clickable {
-                            // Função esquecia a senha
-                        }
-                )
-                Spacer(modifier = Modifier.height(32.dp))
                 Button(
                     onClick = {
                         viewModel.login(email, senha)
                     },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     modifier = Modifier
-                        .width(150.dp)
+                        .weight(1f)
+                        .padding(horizontal = Spacing.large)
                 ) {
-                    Text(text = "Entrar", color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = "Entrar", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.titleMedium)
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+            }
+            Spacer(modifier = Modifier.height(Spacing.large))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth(),
+            ) {
                 Button(
                     onClick = {
                         navController.navigate("cadastro")
                     },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary),
                     modifier = Modifier
-                        .width(150.dp)
+                        .weight(1f)
+                        .padding(horizontal = Spacing.large)
                 ) {
-                    Text(text = "Cadastrar", color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = "Cadastrar", color = MaterialTheme.colorScheme.onPrimary, style = MaterialTheme.typography.titleMedium)
                 }
             }
+
         }
     }
 }

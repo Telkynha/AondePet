@@ -20,6 +20,7 @@ import com.aondepet.ui.models.Estado
 import com.aondepet.ui.models.Genero
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
+import com.aondepet.ui.theme.Spacing
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,8 +47,8 @@ fun FilterBottomSheet(
             onDismissRequest = onDismissRequest,
             sheetState = sheetState
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Filtros:", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = 16.dp))
+            Column(modifier = Modifier.padding(Spacing.medium)) {
+                Text("Filtros:", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = Spacing.medium))
 
                 Text(text = "Status:", style = MaterialTheme.typography.titleMedium)
                 LazyRow(modifier = Modifier.fillMaxWidth()) {
@@ -58,7 +59,7 @@ fun FilterBottomSheet(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(Spacing.medium))
 
                 FilterSection(title = "Animal:", enumValues = Animal.values(), selectedItems = selectedAnimals) { animal ->
                     selectedAnimals = toggleSelection(selectedAnimals, animal)
@@ -76,10 +77,11 @@ fun FilterBottomSheet(
                     selectedEstados = toggleSelection(selectedEstados, estado)
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(Spacing.large))
 
                 Row {
                     Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                         onClick = {
                             selectedAnimals = emptyList()
                             selectedGeneros = emptyList()
@@ -91,8 +93,9 @@ fun FilterBottomSheet(
                     ) {
                         Text("Limpar Filtros")
                     }
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(Spacing.medium))
                     Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                         onClick = {
                             onApplyFilters(selectedAnimals, selectedGeneros, selectedPortes, selectedEstados, selectedStatus)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -130,7 +133,7 @@ fun <T : Enum<T>> FilterSection(
                 FilterButton(value, selectedItems.contains(value)) { onItemSelected(value) }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(Spacing.medium))
     }
 }
 
@@ -139,10 +142,10 @@ fun <T> FilterButton(value: T, isSelected: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainer
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLowest
         ),
         modifier = Modifier
-            .padding(4.dp)
+            .padding(Spacing.extraSmall)
     ) {
         Text(text = value.toString(), color = MaterialTheme.colorScheme.onSurface)
     }

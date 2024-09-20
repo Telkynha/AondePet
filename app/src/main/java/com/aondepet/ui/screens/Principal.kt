@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.*
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -39,6 +41,7 @@ import androidx.navigation.NavController
 import com.aondepet.R
 import com.aondepet.ui.control.AuthState
 import com.aondepet.ui.control.PetViewModel
+import com.aondepet.ui.theme.Spacing
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +81,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                             painter = painterResource(R.drawable.account_icon),
                             contentDescription = "Icone menu",
                             tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(Spacing.large)
                         )
                     }
                 },
@@ -94,27 +97,25 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                 onClick = { showBottomSheet = true }
             )
         }
-    ) { innerPadding ->
+    ) { paddingValues ->
         FilterBottomSheet(showBottomSheet, { showBottomSheet = false }, viewModel::applyFilters)
         Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
+                .padding(Spacing.medium),
         ) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 8.dp, vertical = 16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "Pets",
-                    fontSize = 22.sp,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .padding(start = 8.dp)
                 )
                 if (authState == AuthState.Authenticated) {
                     Row {
