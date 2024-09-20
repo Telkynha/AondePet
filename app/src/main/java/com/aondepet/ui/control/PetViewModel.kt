@@ -49,6 +49,7 @@ class PetViewModel : ViewModel() {
 
     init {
         checkAuthState()
+        loadFavoritos()
         fetchPets()
         _petData.value = Pet()
     }
@@ -139,12 +140,18 @@ class PetViewModel : ViewModel() {
             if (favoritos.contains(petId)) {
                 // Remover dos favoritos
                 firestoreRepository.removeFavorito(contaId, petId)
+                    .addOnSuccessListener {
+                        _favoritos.value = favoritos - petId // Atualiza a lista de favoritos localmente
+                    }
                     .addOnFailureListener { e ->
                         _errorMessage.value = e.message
                     }
             } else {
                 // Adicionar aos favoritos
                 firestoreRepository.addFavorito(contaId, petId)
+                    .addOnSuccessListener {
+                        _favoritos.value = favoritos + petId // Atualiza a lista de favoritos localmente
+                    }
                     .addOnFailureListener { e ->
                         _errorMessage.value = e.message
                     }
@@ -154,17 +161,18 @@ class PetViewModel : ViewModel() {
         }
     }
 
+
     fun isFavorito(contaId: String, petId: String): Task<Boolean> {
         return firestoreRepository.isFavorito(contaId, petId)
     }
 
     fun toggleFavoritosFilter() {
         _mostrarFavoritos.value = _mostrarFavoritos.value?.not()
-        loadFavoritos()
         if (_mostrarFavoritos.value == true) {
             applyFavoritosFilter() // Aplicar filtro somente se mostrarFavoritos for true
         } else {
             _petsList.value = _pets.value // Mostrar todos os pets
+            applyFilters()
         }
     }
 

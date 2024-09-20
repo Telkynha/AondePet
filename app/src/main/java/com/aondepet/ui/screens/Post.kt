@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -185,6 +186,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                 AsyncImage(
                     model = petImage,
                     contentDescription = "Imagem do Pet",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .padding(vertical = Spacing.medium)
                         .fillMaxWidth()
@@ -196,6 +198,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                 Image(
                     painter = painterResource(R.drawable.img),
                     contentDescription = "Imagem Pet",
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .padding(vertical = Spacing.medium)
                         .fillMaxWidth()

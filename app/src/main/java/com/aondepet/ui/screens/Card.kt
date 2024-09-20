@@ -44,7 +44,8 @@ import com.aondepet.ui.theme.Spacing
 
 @Composable
 fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
-    var isFavorite by remember { mutableStateOf(false) }
+    val favoritos by viewModel.favoritos.observeAsState(emptyList()) // Observe a lista de favoritos
+    val isFavorite = favoritos.contains(pet.id)
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val petImage by viewModel.getPetImage(pet.id!!).observeAsState()
 
@@ -52,11 +53,6 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
         imageUri = petImage
     }
 
-    LaunchedEffect(pet.id) {
-        viewModel.isFavorito(userId, pet.id!!).addOnSuccessListener { result ->
-            isFavorite = result
-        }
-    }
     Surface(
         onClick = { navController.navigate("post/${pet.id}") },
         modifier = Modifier
@@ -97,6 +93,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
             Row(
                 modifier = Modifier
                     .padding(Spacing.small)
+                    .height(50.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -134,15 +131,8 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                         }
                     } else {
                         IconButton(
-                            modifier = Modifier.padding(0.dp),
                             onClick = {
-                                pet.id?.let { petId ->
-                                    viewModel.favoritar(userId, petId)
-                                    viewModel.isFavorito(userId, petId)
-                                        .addOnSuccessListener { result ->
-                                            isFavorite = result
-                                        }
-                                }
+                                viewModel.favoritar(userId, pet.id!!) // Aciona o método para favoritar
                             }
                         ) {
                             Icon(
