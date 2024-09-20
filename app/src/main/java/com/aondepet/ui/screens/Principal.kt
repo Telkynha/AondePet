@@ -60,7 +60,6 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
             status = emptyList()
         )
     }
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(

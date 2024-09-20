@@ -356,6 +356,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         )
 
                         viewModel.addPet(pet)
+                        navController.clearBackStack("postFormularioNovo")
                         navController.navigate("principal")
                     }
                 },
@@ -690,6 +691,7 @@ fun PostFormularioAlterar(
                     if (pet != null) {
                         viewModel.updatePet(petId!!, pet)
                     }
+                    navController.clearBackStack("postFormularioAlterar/${petId}")
                     navController.navigate("principal")
                 },
                 modifier = Modifier.fillMaxWidth()

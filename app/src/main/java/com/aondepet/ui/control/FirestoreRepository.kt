@@ -1,7 +1,9 @@
 import android.net.Uri
+import androidx.core.net.toUri
 import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -9,11 +11,14 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.storage.FirebaseStorage
 
 class FirestoreRepository {
     private val db = FirebaseFirestore.getInstance()
     private val petsCollection = db.collection("pets")
     private val contasCollection = db.collection("contas")
+    private val storage = FirebaseStorage.getInstance()
+    private val storageRef = storage.reference
 
     // ========== METODOS - CONTA ==========
 
@@ -66,9 +71,12 @@ class FirestoreRepository {
             if (taskResult.isSuccessful) {
                 val petId = taskResult.result?.id
                 petId?.let { updatePet(it, pet.copy(id = it)) }
+                uploadImage(pet.foto.toUri(), petId!!)
             } else {
                 throw taskResult.exception ?: Exception("Erro ao adicionar pet")
             }
+            // Return a Task<Void> to indicate the completion of the operation
+            Tasks.forResult(null)
         }
     }
 
@@ -143,6 +151,16 @@ class FirestoreRepository {
 
     fun getPetById(petId: String): Task<DocumentSnapshot> {
         return petsCollection.document(petId).get()
+    }
+
+    fun uploadImage(imageUri: Uri, petId: String) {
+        val imageRef = storageRef.child("pets/${petId}")
+        imageRef.putFile(imageUri)
+    }
+
+    fun getImageUrl(petId: String): Task<Uri> {
+        val imageRef = storageRef.child("pets/${petId}")
+        return imageRef.downloadUrl
     }
 
 }

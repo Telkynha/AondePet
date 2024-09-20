@@ -1,5 +1,7 @@
 package com.aondepet.ui.models
 
+import com.google.firebase.Timestamp
+
 data class Pet(
     var id: String = "",
     val nome: String = "",
@@ -15,7 +17,8 @@ data class Pet(
     val conta: String = "",
     val email: String = "",
     val telefone: String = "",
-    var foto: String = ""
+    var foto: String = "",
+    val adicionadoEm: Timestamp = Timestamp.now()
 ) {
 
 }

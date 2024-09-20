@@ -17,11 +17,11 @@ import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
 
 class PetViewModel : ViewModel() {
     private val authRepository = FirebaseAuthRepository()
     private val firestoreRepository = FirestoreRepository()
-    private val storageRepository = StorageRepository()
 
     private val _authState = MutableLiveData<AuthState>()
     val authState: LiveData<AuthState> = _authState
@@ -192,7 +192,6 @@ class PetViewModel : ViewModel() {
     fun addPet(pet: Pet) {
         firestoreRepository.addPet(pet)
             .addOnSuccessListener { documentReference ->
-                uploadImage(pet.foto.toUri(), pet.id!!)
                 fetchPets()
             }
             .addOnFailureListener { e ->
@@ -255,34 +254,36 @@ class PetViewModel : ViewModel() {
         val estadosList = estados.map { it.name }
         val statusList = status.map { it.name }
 
+        val onSuccessListener = { querySnapshot: QuerySnapshot ->
+            val pets = querySnapshot.documents
+                .mapNotNull { it.toObject(Pet::class.java) }
+                .sortedByDescending { it.adicionadoEm } // Ordena pela data de adição em ordem decrescente
+            _petsList.value = pets
+        }
+
         if (animalsList.isEmpty() && generosList.isEmpty() && portesList.isEmpty() && estadosList.isEmpty() && statusList.isEmpty()) {
             firestoreRepository.getPetsByFilters()
-                .addOnSuccessListener { querySnapshot ->
-                    val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
-                    _petsList.value = pets
-                }
+                .addOnSuccessListener(onSuccessListener)
                 .addOnFailureListener { exception ->
                     _errorMessage.value = exception.message
                 }
         } else {
             firestoreRepository.getPetsByFilters(animalsList, generosList, portesList, estadosList, statusList)
-                .addOnSuccessListener { querySnapshot ->
-                    val pets = querySnapshot.documents.mapNotNull { it.toObject(Pet::class.java) }
-                    _petsList.value = pets
-                }
+                .addOnSuccessListener(onSuccessListener)
                 .addOnFailureListener { exception ->
                     _errorMessage.value = exception.message
                 }
         }
     }
 
+
     fun uploadImage(imageUri: Uri, petId: String) {
-        storageRepository.uploadImage(imageUri, petId)
+        firestoreRepository.uploadImage(imageUri, petId)
     }
 
     fun getPetImage(petId: String): LiveData<Uri?> {
         val imageUrl = MutableLiveData<Uri?>()
-        storageRepository.getImageUrl(petId)
+        firestoreRepository.getImageUrl(petId)
             .addOnSuccessListener { uri ->
                 imageUrl.value = uri
             }
