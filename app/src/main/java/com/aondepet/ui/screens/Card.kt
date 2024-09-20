@@ -1,5 +1,6 @@
 package com.aondepet.ui.screens
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +45,12 @@ import com.aondepet.ui.theme.Spacing
 @Composable
 fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewModel: PetViewModel, userId: String) {
     var isFavorite by remember { mutableStateOf(false) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     val petImage by viewModel.getPetImage(pet.id!!).observeAsState()
+
+    LaunchedEffect(petImage) {
+        imageUri = petImage
+    }
 
     LaunchedEffect(pet.id) {
         viewModel.isFavorito(userId, pet.id!!).addOnSuccessListener { result ->
@@ -67,9 +73,9 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                val painter: Painter = if (petImage != null) {
+                val painter: Painter = if (imageUri != null) {
                     rememberAsyncImagePainter(
-                        model = petImage,
+                        model = imageUri,
                         contentScale = ContentScale.Crop
                     )
                 } else {

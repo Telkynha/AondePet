@@ -392,6 +392,9 @@ fun PostFormularioAlterar(
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val petImage by viewModel.getPetImage(petId!!).observeAsState()
+    imageUri = petImage
+
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             imageUri = uri

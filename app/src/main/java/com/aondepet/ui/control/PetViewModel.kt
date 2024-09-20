@@ -158,27 +158,25 @@ class PetViewModel : ViewModel() {
         return firestoreRepository.isFavorito(contaId, petId)
     }
 
+    fun toggleFavoritosFilter() {
+        _mostrarFavoritos.value = _mostrarFavoritos.value?.not()
+        loadFavoritos()
+        if (_mostrarFavoritos.value == true) {
+            applyFavoritosFilter() // Aplicar filtro somente se mostrarFavoritos for true
+        } else {
+            _petsList.value = _pets.value // Mostrar todos os pets
+        }
+    }
+
     fun loadFavoritos() {
         _userId.value?.let { contaId ->
             firestoreRepository.getFavoritos(contaId)
                 .addOnSuccessListener { favoritosIds ->
                     _favoritos.value = favoritosIds
-                    if (_mostrarFavoritos.value == true) {
-                        applyFavoritosFilter()
-                    }
                 }
                 .addOnFailureListener { e ->
                     _errorMessage.value = e.message
                 }
-        }
-    }
-
-    fun toggleFavoritosFilter() {
-        _mostrarFavoritos.value = _mostrarFavoritos.value?.not()
-        if (_mostrarFavoritos.value == true) {
-            applyFavoritosFilter()
-        } else {
-            _petsList.value = _pets.value // Mostrar todos os pets
         }
     }
 
