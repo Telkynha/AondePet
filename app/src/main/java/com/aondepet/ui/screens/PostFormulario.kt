@@ -413,7 +413,6 @@ fun PostFormularioAlterar(
                 porte = pet?.porte ?: Porte.Medio
                 estado = pet?.estado ?: Estado.AC
                 cidade = pet?.cidade ?: ""
-                imageUri = pet?.foto?.toUri()
             }
         }
     }
