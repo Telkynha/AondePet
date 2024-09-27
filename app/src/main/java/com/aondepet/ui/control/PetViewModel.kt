@@ -41,8 +41,11 @@ class PetViewModel : ViewModel() {
     private val _favoritos = MutableLiveData<List<String>>() // Lista de IDs dos pets favoritos
     val favoritos: LiveData<List<String>> get() = _favoritos
 
-    private val _mostrarFavoritos = MutableLiveData<Boolean>(false) // Controla se o filtro de favoritos está ativo
+    private val _mostrarFavoritos = MutableLiveData<Boolean>(false)
     val mostrarFavoritos: LiveData<Boolean> get() = _mostrarFavoritos
+
+    private val _mostrarMeusPets = MutableLiveData<Boolean>(false)
+    val mostrarMeusPets: LiveData<Boolean> get() = _mostrarMeusPets
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -161,6 +164,27 @@ class PetViewModel : ViewModel() {
         }
     }
 
+    fun toggleMeusPetsFilter() {
+        _mostrarMeusPets.value = _mostrarMeusPets.value?.not()
+        if (_mostrarMeusPets.value == true) {
+            mostrarMeusPets()
+        } else {
+            _petsList.value = _pets.value
+            applyFilters()
+        }
+    }
+
+    private fun mostrarMeusPets() {
+        val userId = _userId.value
+        val allPets = _pets.value ?: emptyList()
+
+        if (userId != null) {
+            val meusPets = allPets.filter { it.conta == userId }
+            _petsList.value = meusPets
+        } else {
+            _errorMessage.value = "Usuário não autenticado"
+        }
+    }
 
     fun isFavorito(contaId: String, petId: String): Task<Boolean> {
         return firestoreRepository.isFavorito(contaId, petId)

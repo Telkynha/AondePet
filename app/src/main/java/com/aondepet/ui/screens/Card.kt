@@ -57,6 +57,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
         onClick = { navController.navigate("post/${pet.id}") },
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = Spacing.small)
             .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
         shape = RoundedCornerShape(4.dp),
         color = Color.Transparent

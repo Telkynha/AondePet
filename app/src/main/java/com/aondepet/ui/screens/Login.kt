@@ -113,6 +113,7 @@ fun Login(navController: NavController, viewModel: PetViewModel) {
             )
             OutlinedTextField(
                 value = email,
+                singleLine = true,
                 onValueChange = { email = it },
                 label = { Text("Email", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyLarge) },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -124,6 +125,7 @@ fun Login(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.medium))
             OutlinedTextField(
                 value = senha,
+                singleLine = true,
                 onValueChange = { senha = it },
                 label = { Text("Senha", color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyLarge) },
                 visualTransformation = PasswordVisualTransformation(),

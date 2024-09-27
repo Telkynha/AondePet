@@ -149,7 +149,25 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                                 modifier = Modifier.size(24.dp)
                             )
                         }
-
+                        SmallFloatingActionButton(
+                            onClick = {
+                                viewModel.toggleMeusPetsFilter()
+                            },
+                            containerColor = if (viewModel.mostrarMeusPets.value == true)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.secondaryContainer,
+                            contentColor = if (viewModel.mostrarMeusPets.value == true)
+                                MaterialTheme.colorScheme.onPrimary
+                            else
+                                MaterialTheme.colorScheme.secondary
+                        ) {
+                            Icon(
+                                painter =  painterResource(R.drawable.pet),
+                                contentDescription = "Filtrar meus pets",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 } // Autenticado
             }

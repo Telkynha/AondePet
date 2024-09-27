@@ -115,6 +115,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.medium))
             OutlinedTextField(
                 value = nome,
+                singleLine = true,
                 onValueChange = { nome = it },
                 label = {
                     Text(
@@ -132,6 +133,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.medium))
             OutlinedTextField(
                 value = email,
+                singleLine = true,
                 onValueChange = { email = it },
                 label = {
                     Text(
@@ -149,6 +151,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.medium))
             OutlinedTextField(
                 value = senha,
+                singleLine = true,
                 onValueChange = { senha = it },
                 label = {
                     Text(
@@ -167,6 +170,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.medium))
             OutlinedTextField(
                 value = confirmarSenha,
+                singleLine = true,
                 onValueChange = { confirmarSenha = it },
                 label = {
                     Text(

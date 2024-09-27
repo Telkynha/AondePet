@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -48,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -170,6 +172,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             )
             OutlinedTextField(
                 value = nome,
+                singleLine = true,
                 onValueChange = { nome = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -190,6 +193,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.small))
             OutlinedTextField(
                 value = raca,
+                singleLine = true,
                 onValueChange = { raca = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -210,6 +214,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.small))
             OutlinedTextField(
                 value = idade,
+                singleLine = true,
                 onValueChange = { idade = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -218,7 +223,8 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Spacer(modifier = Modifier.height(Spacing.small))
             DropdownSelector(
@@ -288,6 +294,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = email,
+                        singleLine = true,
                         onValueChange = { email = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
@@ -301,6 +308,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = telefone,
+                        singleLine = true,
                         onValueChange = { telefone = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
@@ -321,6 +329,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = cidade,
+                        singleLine = true,
                         onValueChange = { cidade = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
@@ -504,6 +513,7 @@ fun PostFormularioAlterar(
             )
             OutlinedTextField(
                 value = nome,
+                singleLine = true,
                 onValueChange = { nome = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -524,6 +534,7 @@ fun PostFormularioAlterar(
             Spacer(modifier = Modifier.height(Spacing.small))
             OutlinedTextField(
                 value = raca,
+                singleLine = true,
                 onValueChange = { raca = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -544,6 +555,7 @@ fun PostFormularioAlterar(
             Spacer(modifier = Modifier.height(Spacing.small))
             OutlinedTextField(
                 value = idade,
+                singleLine = true,
                 onValueChange = { idade = it },
                 modifier = Modifier.fillMaxWidth(),
                 label = {
@@ -552,7 +564,8 @@ fun PostFormularioAlterar(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                }
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
             Spacer(modifier = Modifier.height(Spacing.small))
             DropdownSelector(
@@ -622,6 +635,7 @@ fun PostFormularioAlterar(
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = email,
+                        singleLine = true,
                         onValueChange = { email = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
@@ -635,6 +649,7 @@ fun PostFormularioAlterar(
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = telefone,
+                        singleLine = true,
                         onValueChange = { telefone = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {
@@ -655,6 +670,7 @@ fun PostFormularioAlterar(
                     Spacer(modifier = Modifier.height(Spacing.small))
                     OutlinedTextField(
                         value = cidade,
+                        singleLine = true,
                         onValueChange = { cidade = it },
                         modifier = Modifier.fillMaxWidth(),
                         label = {

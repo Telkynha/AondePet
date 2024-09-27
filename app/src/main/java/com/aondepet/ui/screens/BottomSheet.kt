@@ -40,8 +40,6 @@ fun FilterBottomSheet(
     var selectedEstados by remember { mutableStateOf(listOf<Estado>()) }
     var selectedStatus by remember { mutableStateOf(listOf<Status>()) }
 
-    val statusOptions = listOf(Status.Adotar, Status.Perdido, Status.Outro)
-
     if (showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
@@ -50,16 +48,9 @@ fun FilterBottomSheet(
             Column(modifier = Modifier.padding(Spacing.medium)) {
                 Text("Filtros:", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = Spacing.medium))
 
-                Text(text = "Status:", style = MaterialTheme.typography.titleMedium)
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
-                    items(statusOptions) { status ->
-                        FilterButton(status, selectedStatus.contains(status)) {
-                            selectedStatus = toggleSelection(selectedStatus, status)
-                        }
-                    }
+                FilterSection(title = "Status:", enumValues = Status.values(), selectedItems = selectedStatus) { status ->
+                    selectedStatus = toggleSelection(selectedStatus, status)
                 }
-
-                Spacer(modifier = Modifier.height(Spacing.medium))
 
                 FilterSection(title = "Animal:", enumValues = Animal.values(), selectedItems = selectedAnimals) { animal ->
                     selectedAnimals = toggleSelection(selectedAnimals, animal)
