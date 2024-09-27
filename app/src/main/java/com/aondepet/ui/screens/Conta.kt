@@ -66,7 +66,7 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
                 title = {
                     Text(
                         text = "Conta",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -91,7 +91,7 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(Spacing.medium)
+                .padding(Spacing.large)
                 .verticalScroll(rememberScrollState()),
         ) {
             Icon(

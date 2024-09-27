@@ -76,7 +76,7 @@ fun Cadastro(navController: NavController, viewModel: PetViewModel) {
                 title = {
                     Text(
                         text = "Cadastro",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },

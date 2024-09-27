@@ -7,10 +7,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -95,7 +97,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                 title = {
                     Text(
                         text = "Novo Pet",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -133,13 +135,15 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(Spacing.medium)
+                .padding(Spacing.large)
                 .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = "Detalhes do pet:", style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
+                    .padding(horizontal = Spacing.medium)
+                    .offset(x = (-Spacing.large))
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
@@ -163,7 +167,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                 modifier = Modifier
                     .padding(vertical = Spacing.medium)
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(250.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                     .clickable {
@@ -436,7 +440,7 @@ fun PostFormularioAlterar(
                 title = {
                     Text(
                         text = "Alterar Pet",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -474,13 +478,15 @@ fun PostFormularioAlterar(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(Spacing.medium)
+                .padding(Spacing.large)
                 .verticalScroll(rememberScrollState()),
         ) {
             Text(
                 text = "Detalhes do pet:", style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
+                    .padding(horizontal = Spacing.medium)
+                    .offset(x = (-Spacing.large))
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
@@ -504,7 +510,7 @@ fun PostFormularioAlterar(
                 modifier = Modifier
                     .padding(vertical = Spacing.medium)
                     .fillMaxWidth()
-                    .height(300.dp)
+                    .height(250.dp)
                     .clip(RoundedCornerShape(4.dp))
                     .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                     .clickable {

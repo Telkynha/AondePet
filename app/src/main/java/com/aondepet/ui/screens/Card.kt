@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -107,16 +108,16 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                 Icon(
                     painter = painterResource(generoIcon),
                     contentDescription = "Ícone gênero",
-                    tint = MaterialTheme.colorScheme.secondary
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .padding(start = Spacing.small)
+                        .size(24.dp)
                 )
-                if (authState == AuthState.Unauthenticated) {
-                    Spacer(modifier = Modifier.weight(0.8f))
-                }
                 Text(
                     text = pet.nome,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier
                 )
                 if (authState == AuthState.Authenticated) {
                     if (pet.conta == userId) {
@@ -145,7 +146,13 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                         }
                     }
                 }else{
-                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        painter = painterResource(generoIcon),
+                        contentDescription = "Espaçamento",
+                        tint = MaterialTheme.colorScheme.secondary,
+                        modifier = Modifier.size(24.dp)
+                            .alpha(0f)
+                    )
                 }
             }
         }

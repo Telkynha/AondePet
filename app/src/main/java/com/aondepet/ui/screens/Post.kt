@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -115,14 +116,13 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
             }
         }
     }
-
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
                         text = "Pet",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
@@ -169,6 +169,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
+
             ) {
                 Text(
                     text = "$nome",
@@ -180,7 +181,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary
                 )
-            } // Row textos: Nome e Status
+            }
 
             if (petImage != null) {
                 AsyncImage(
@@ -190,7 +191,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     modifier = Modifier
                         .padding(vertical = Spacing.medium)
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(250.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                 )
@@ -202,7 +203,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     modifier = Modifier
                         .padding(vertical = Spacing.medium)
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(250.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                 )
@@ -268,13 +269,13 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     .fillMaxWidth()
                     .padding(vertical = Spacing.medium)
                     .wrapContentHeight(),
-                shape = RoundedCornerShape(4.dp),
+                shape = RoundedCornerShape(12.dp), // Arredondando mais a borda
                 color = MaterialTheme.colorScheme.primaryContainer
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = Spacing.medium),
+                        .padding(Spacing.large)
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -282,46 +283,51 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         modifier = Modifier
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center // Centraliza os itens dentro da Row
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         // Primeira Coluna
                         Column(
                             modifier = Modifier
-                                .weight(1f), // Espaçamento entre colunas
-                            horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
+                                .weight(1f),
+                            horizontalAlignment = Alignment.Start
                         ) {
                             Text(
                                 text = "Animal: $animal",
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    lineHeight = 22.sp // Aumentando o espaçamento entre linhas
+                                ),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Raça: $raca",
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    lineHeight = 22.sp
+                                ),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                        }
-
-                        // Segunda Coluna
-                        Column(
-                            modifier = Modifier
-                                .weight(1f), // Espaçamento entre colunas
-                            horizontalAlignment = Alignment.CenterHorizontally // Centraliza os textos dentro da coluna
-                        ) {
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Porte: $porte",
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    lineHeight = 22.sp
+                                ),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Idade: $idade anos",
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    lineHeight = 22.sp
+                                ),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
                 }
             }
+
+
 
             Surface(
                 modifier = Modifier

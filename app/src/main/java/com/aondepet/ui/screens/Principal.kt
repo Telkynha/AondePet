@@ -66,7 +66,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                 title = {
                     Text(
                         text = "Aonde Pet",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleLarge
                     )
                 },
