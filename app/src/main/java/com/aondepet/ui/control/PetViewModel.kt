@@ -235,7 +235,7 @@ class PetViewModel : ViewModel() {
         firestoreRepository.getPets()
             .addOnSuccessListener { querySnapshot ->
                 val petList = querySnapshot.toObjects(Pet::class.java)
-                _pets.value = petList
+                    .sortedByDescending { it.adicionadoEm }
                 if (_mostrarFavoritos.value == true) {
                     applyFavoritosFilter()
                 } else {
