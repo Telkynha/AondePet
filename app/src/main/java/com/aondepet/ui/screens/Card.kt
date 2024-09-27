@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -86,7 +87,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
+                        .aspectRatio(16 / 9f)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                 )

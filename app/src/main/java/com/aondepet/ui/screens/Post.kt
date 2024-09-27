@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -191,7 +192,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     modifier = Modifier
                         .padding(vertical = Spacing.medium)
                         .fillMaxWidth()
-                        .height(250.dp)
+                        .aspectRatio(4 / 3f)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                 )
@@ -203,7 +204,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     modifier = Modifier
                         .padding(vertical = Spacing.medium)
                         .fillMaxWidth()
-                        .height(250.dp)
+                        .aspectRatio(4 / 3f)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
                 )
