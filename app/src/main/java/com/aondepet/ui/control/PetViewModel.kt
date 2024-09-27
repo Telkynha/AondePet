@@ -236,6 +236,7 @@ class PetViewModel : ViewModel() {
             .addOnSuccessListener { querySnapshot ->
                 val petList = querySnapshot.toObjects(Pet::class.java)
                     .sortedByDescending { it.adicionadoEm }
+                _pets.value = petList
                 if (_mostrarFavoritos.value == true) {
                     applyFavoritosFilter()
                 } else {
