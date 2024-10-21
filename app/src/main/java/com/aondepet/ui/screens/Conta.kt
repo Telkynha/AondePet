@@ -220,7 +220,7 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        TODO()//
+                        // chama metodo excluir
                         showDeleteDialog = false
                     }
                 ) {
