@@ -1,5 +1,6 @@
 package com.aondepet.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.height
@@ -45,7 +46,8 @@ fun FilterBottomSheet(
             onDismissRequest = onDismissRequest,
             sheetState = sheetState
         ) {
-            Column(modifier = Modifier.padding(Spacing.medium)) {
+
+            Column(modifier = Modifier.padding(Spacing.medium).background(MaterialTheme.colorScheme.inversePrimary)) {
                 Text("Filtros:", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = Spacing.medium))
 
                 FilterSection(title = "Status:", enumValues = Status.values(), selectedItems = selectedStatus) { status ->
@@ -133,7 +135,7 @@ fun <T> FilterButton(value: T, isSelected: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLowest
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color(0xFFFFFFFF)
         ),
         modifier = Modifier
             .padding(Spacing.extraSmall)

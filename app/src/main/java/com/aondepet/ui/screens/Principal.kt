@@ -52,21 +52,6 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
         )
     }
 
-    // Observando o authState para verificar se o usuário está autenticado
-    LaunchedEffect(authState) {
-        // Esta parte agora não altera a mensagem padrão
-        when (authState) {
-            is AuthState.Unauthenticated -> {
-                // Se o estado for não autenticado, a mensagem atual permanece
-                // e pode ser exibida como uma opção de ação.
-            }
-            else -> {
-                // O estado autenticado não muda a mensagem inicial
-                // Para adicionar qualquer outra lógica, você pode fazer aqui
-            }
-        }
-    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -192,8 +177,8 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                text = { Text("Filtros") },
-                icon = { Icon(painterResource(R.drawable.search), contentDescription = "Filtrar") },
+                text = { Text("Filtros", color = MaterialTheme.colorScheme.primary) },
+                icon = { Icon(painterResource(R.drawable.search), contentDescription = "Filtrar", tint = MaterialTheme.colorScheme.primary,) },
                 onClick = { showBottomSheet = true },
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -213,7 +198,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .clickable { isVisible = false }, // O Row desaparece ao ser clicado
+                        .clickable { isVisible = false },
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {

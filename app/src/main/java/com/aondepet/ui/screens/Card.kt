@@ -89,7 +89,6 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                         .fillMaxWidth()
                         .aspectRatio(16 / 9f)
                         .clip(RoundedCornerShape(16.dp))
-                        .border(1.dp, MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                 )
 
             } // Row com a imagem do pet
