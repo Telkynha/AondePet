@@ -77,7 +77,7 @@ fun Login(navController: NavController, viewModel: PetViewModel) {
                     Text(
                         text = "Login",
                         color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleMedium
                     )
                 },
                 navigationIcon = {

@@ -60,8 +60,8 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Spacing.small)
-            .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp)),
-        shape = RoundedCornerShape(4.dp),
+            .border(1.dp, MaterialTheme.colorScheme.secondary, RoundedCornerShape(16.dp)),
+        shape = RoundedCornerShape(16.dp),
         color = Color.Transparent
     ) {
         Column {
@@ -88,15 +88,15 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(16 / 9f)
-                        .clip(RoundedCornerShape(4.dp))
-                        .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                        .clip(RoundedCornerShape(16.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp))
                 )
 
             } // Row com a imagem do pet
             Row(
                 modifier = Modifier
                     .padding(Spacing.small)
-                    .height(50.dp)
+                    .height(40.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -158,5 +158,5 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
             }
         }
     }
-    Spacer(modifier = Modifier.height(24.dp))
+    Spacer(modifier = Modifier.height(Spacing.medium))
 }
