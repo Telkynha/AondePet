@@ -1,21 +1,29 @@
 package com.aondepet.ui.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import com.aondepet.ui.models.Animal
 import com.aondepet.ui.models.Estado
 import com.aondepet.ui.models.Genero
@@ -50,23 +58,23 @@ fun FilterBottomSheet(
             Column(modifier = Modifier.padding(Spacing.medium).background(MaterialTheme.colorScheme.inversePrimary)) {
                 Text("Filtros:", style = MaterialTheme.typography.headlineMedium, modifier = Modifier.padding(bottom = Spacing.medium))
 
-                FilterSection(title = "Status:", enumValues = Status.values(), selectedItems = selectedStatus) { status ->
+                FilterSection(title = "Status:", enumValues = Status.entries.toTypedArray(), selectedItems = selectedStatus) { status ->
                     selectedStatus = toggleSelection(selectedStatus, status)
                 }
 
-                FilterSection(title = "Animal:", enumValues = Animal.values(), selectedItems = selectedAnimals) { animal ->
+                FilterSection(title = "Animal:", enumValues = Animal.entries.toTypedArray(), selectedItems = selectedAnimals) { animal ->
                     selectedAnimals = toggleSelection(selectedAnimals, animal)
                 }
 
-                FilterSection(title = "Gênero:", enumValues = Genero.values(), selectedItems = selectedGeneros) { genero ->
+                FilterSection(title = "Gênero:", enumValues = Genero.entries.toTypedArray(), selectedItems = selectedGeneros) { genero ->
                     selectedGeneros = toggleSelection(selectedGeneros, genero)
                 }
 
-                FilterSection(title = "Porte:", enumValues = Porte.values(), selectedItems = selectedPortes) { porte ->
+                FilterSection(title = "Porte:", enumValues = Porte.entries.toTypedArray(), selectedItems = selectedPortes) { porte ->
                     selectedPortes = toggleSelection(selectedPortes, porte)
                 }
 
-                FilterSection(title = "Estado:", enumValues = Estado.values(), selectedItems = selectedEstados) { estado ->
+                FilterSection(title = "Estado:", enumValues = Estado.entries.toTypedArray(), selectedItems = selectedEstados) { estado ->
                     selectedEstados = toggleSelection(selectedEstados, estado)
                 }
 

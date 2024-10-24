@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.aondepet.R
@@ -49,7 +48,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
     val favoritos by viewModel.favoritos.observeAsState(emptyList()) // Observe a lista de favoritos
     val isFavorite = favoritos.contains(pet.id)
     var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val petImage by viewModel.getPetImage(pet.id!!).observeAsState()
+    val petImage by viewModel.getPetImage(pet.id).observeAsState()
 
     LaunchedEffect(petImage) {
         imageUri = petImage
@@ -134,7 +133,7 @@ fun CardPet(navController: NavController, pet: Pet, authState: AuthState, viewMo
                     } else {
                         IconButton(
                             onClick = {
-                                viewModel.favoritar(userId, pet.id!!) // Aciona o método para favoritar
+                                viewModel.favoritar(userId, pet.id) // Aciona o método para favoritar
                             }
                         ) {
                             Icon(

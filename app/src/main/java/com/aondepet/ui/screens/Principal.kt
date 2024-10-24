@@ -178,7 +178,11 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("Filtros", color = MaterialTheme.colorScheme.primary) },
-                icon = { Icon(painterResource(R.drawable.search), contentDescription = "Filtrar", tint = MaterialTheme.colorScheme.primary,) },
+                icon = { Icon(
+                    painterResource(R.drawable.search),
+                    contentDescription = "Filtrar",
+                    tint = MaterialTheme.colorScheme.primary,
+                ) },
                 onClick = { showBottomSheet = true },
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
