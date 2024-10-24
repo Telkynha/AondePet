@@ -218,7 +218,7 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Deletar conta") },
-            text = { Text("Tem certeza de que deseja excluir sua conta? Fazer isso significa também, dexcluir todos os seus posts\nEsta ação não pode ser desfeita.") },
+            text = { Text("Tem certeza de que deseja excluir sua conta?\nFazer isso significa também excluir todos os seus posts\n\nEsta ação não pode ser desfeita.") },
             confirmButton = {
                 TextButton(
                     onClick = {
