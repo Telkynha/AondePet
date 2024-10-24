@@ -40,7 +40,7 @@ class FirebaseAuthRepository {
             .addOnFailureListener { onFailure(it.message ?: "Erro desconhecido") }
     }
 
-    fun deletarContaByid(userId: String) {
+    fun deletarContaByid() {
         auth.currentUser?.delete()
     }
 
