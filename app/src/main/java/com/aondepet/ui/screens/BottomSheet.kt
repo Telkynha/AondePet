@@ -76,20 +76,6 @@ fun FilterBottomSheet(
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                         onClick = {
-                            selectedAnimals = emptyList()
-                            selectedGeneros = emptyList()
-                            selectedPortes = emptyList()
-                            selectedEstados = emptyList()
-                            selectedStatus = emptyList()
-                        },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text("Limpar Filtros")
-                    }
-                    Spacer(modifier = Modifier.width(Spacing.medium))
-                    Button(
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        onClick = {
                             onApplyFilters(selectedAnimals, selectedGeneros, selectedPortes, selectedEstados, selectedStatus)
                             scope.launch { sheetState.hide() }.invokeOnCompletion {
                                 if (!sheetState.isVisible) {
@@ -100,6 +86,20 @@ fun FilterBottomSheet(
                         modifier = Modifier.weight(1f)
                     ) {
                         Text("Aplicar Filtros")
+                    }
+                    Spacer(modifier = Modifier.width(Spacing.medium))
+                    Button(
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                        onClick = {
+                            selectedAnimals = emptyList()
+                            selectedGeneros = emptyList()
+                            selectedPortes = emptyList()
+                            selectedEstados = emptyList()
+                            selectedStatus = emptyList()
+                        },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Limpar Filtros")
                     }
                 }
             }

@@ -123,7 +123,9 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
                         .background(MaterialTheme.colorScheme.errorContainer),
                     contentAlignment = Alignment.Center
                 ) {
-                    IconButton(onClick = { showDeleteDialog = true }) {
+                    IconButton(onClick = {
+                        showDeleteDialog = true
+                    }) {
                         Icon(
                             painter = painterResource(R.drawable.delete),
                             contentDescription = "Ícone delete conta",
@@ -216,11 +218,12 @@ fun Conta(navController: NavController, viewModel: PetViewModel) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Deletar conta") },
-            text = { Text("Tem certeza de que deseja excluir sua conta?\nEsta ação não pode ser desfeita.") },
+            text = { Text("Tem certeza de que deseja excluir sua conta? Fazer isso significa também, dexcluir todos os seus posts\nEsta ação não pode ser desfeita.") },
             confirmButton = {
                 TextButton(
                     onClick = {
                         viewModel.deleteConta()
+                        viewModel.logout()
                         showDeleteDialog = false
                     }
                 ) {

@@ -123,11 +123,30 @@ class PetViewModel : ViewModel() {
     }
 
     fun deleteConta() {
-        _userId.value?.let {
-            firestoreRepository.deleteConta(it)
-            authRepository.deletarContaByid(it)
+        _userId.value?.let { userId ->
+            firestoreRepository.getPetsByUserId(userId)
+                .addOnSuccessListener { querySnapshot ->
+                    val meusPets = querySnapshot.toObjects(Pet::class.java)
+                    meusPets.forEach { pet ->
+                        firestoreRepository.deletePet(pet.id)
+                    }
+                    firestoreRepository.deleteConta(userId)
+                        .addOnSuccessListener {
+                            authRepository.deletarContaByid(userId)
+                        }
+                        .addOnFailureListener { e ->
+                            _errorMessage.value = "Erro ao deletar a conta: ${e.message}"
+                        }
+                }
+                .addOnFailureListener { e ->
+                    _errorMessage.value = "Erro ao buscar os pets do usuário: ${e.message}"
+                }
+        } ?: run {
+            _errorMessage.value = "Usuário não autenticado"
         }
     }
+
+
 
     fun getContaById(): Task<DocumentSnapshot> {
         return _userId.value?.let {

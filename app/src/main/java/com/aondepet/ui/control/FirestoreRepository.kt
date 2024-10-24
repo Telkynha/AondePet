@@ -86,7 +86,12 @@ class FirestoreRepository {
     }
 
     fun deletePet(petId: String): Task<Void> {
+        deleteImage(petId)
         return petsCollection.document(petId).delete()
+    }
+
+    fun getPetsByUserId(userId: String): Task<QuerySnapshot> {
+        return petsCollection.whereEqualTo("conta", userId).get()
     }
 
     fun getPetsByFilters(
@@ -157,6 +162,11 @@ class FirestoreRepository {
     fun getImageUrl(petId: String): Task<Uri> {
         val imageRef = storageRef.child("pets/${petId}")
         return imageRef.downloadUrl
+    }
+
+    fun deleteImage(petId: String) {
+        val imageRef = storageRef.child("pets/${petId}")
+        imageRef.delete()
     }
 
 }

@@ -353,7 +353,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                             errorIndicatorColor = Color.Transparent
-                        )
+                        ),
                     )
                 }
             }
