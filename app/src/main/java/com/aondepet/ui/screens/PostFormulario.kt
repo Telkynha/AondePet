@@ -78,6 +78,8 @@ import com.aondepet.ui.theme.Spacing
 @Composable
 fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 
+    val statusOptions = listOf(Status.Adotar, Status.Perdido, Status.Outro)
+
     var nome by remember { mutableStateOf("") }
     var raca by remember { mutableStateOf("") }
     var genero by remember { mutableStateOf(Genero.Macho) }
@@ -85,10 +87,10 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
     var descricao by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(Status.Adotado) }
-    var animal by remember { mutableStateOf(Animal.Cachorro) }
+    var status by remember { mutableStateOf(Status.Adotar) }
+    var animal by remember { mutableStateOf(Animal.Gato) }
     var porte by remember { mutableStateOf(Porte.Medio) }
-    var estado by remember { mutableStateOf(Estado.AC) }
+    var estado by remember { mutableStateOf(Estado.SP) }
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -232,7 +234,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             Spacer(modifier = Modifier.height(Spacing.medium))
             DropdownSelector(
                 label = "Status",
-                options = Status.entries,
+                options = statusOptions,
                 selectedOption = status,
                 onOptionSelected = { status = it }
             )
