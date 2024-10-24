@@ -26,10 +26,6 @@ class FirestoreRepository {
         return contasCollection.document(contaId).set(conta)
     }
 
-    fun updateConta(contaId: String, updatedConta: Conta): Task<Void> {
-        return contasCollection.document(contaId).set(updatedConta)
-    }
-
     fun deleteConta(contaId: String): Task<Void> {
         return contasCollection.document(contaId).delete()
     }

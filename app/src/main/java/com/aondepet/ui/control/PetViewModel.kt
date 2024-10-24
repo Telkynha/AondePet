@@ -125,6 +125,7 @@ class PetViewModel : ViewModel() {
     fun deleteConta() {
         _userId.value?.let {
             firestoreRepository.deleteConta(it)
+            authRepository.deletarContaByid(it)
         }
     }
 

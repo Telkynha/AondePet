@@ -213,7 +213,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(Spacing.small))
+            Spacer(modifier = Modifier.height(Spacing.medium))
             LazyColumn {
                 items(petsList) { pet ->
                     authState?.let {
