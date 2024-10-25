@@ -9,7 +9,7 @@ data class Pet(
     val raca: String = "",
     val genero: Genero = Genero.Macho,
     val porte: Porte = Porte.Medio,
-    val idade: Int = 0,
+    val idade: String = "",
     val estado: Estado = Estado.AC,
     val cidade: String = "",
     val status: Status = Status.Adotado,

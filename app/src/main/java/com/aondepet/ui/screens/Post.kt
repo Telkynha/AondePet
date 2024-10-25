@@ -84,7 +84,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     raca = pet?.raca ?: ""
                     genero = pet?.genero ?: Genero.Macho
                     porte = pet?.porte ?: Porte.Medio
-                    idade = pet?.idade.toString()
+                    idade = pet?.idade ?: ""
                     estado = pet?.estado ?: Estado.AC
                     cidade = pet?.cidade ?: ""
                     status = pet?.status ?: Status.Adotado
@@ -315,7 +315,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Idade: $idade anos",
+                                text = "Idade: $idade",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     lineHeight = 22.sp
                                 ),

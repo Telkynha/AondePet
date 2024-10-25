@@ -139,7 +139,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                                 nome = nome,
                                 raca = raca,
                                 genero = genero,
-                                idade = idade.toIntOrNull() ?: 0,
+                                idade = idade,
                                 descricao = descricao,
                                 status = status,
                                 animal = animal,
@@ -306,8 +306,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                }
             )
             Spacer(modifier = Modifier.height(Spacing.small))
             DropdownSelector(
@@ -528,7 +527,7 @@ fun PostFormularioAlterar(
                                 nome = nome,
                                 raca = raca,
                                 genero = genero,
-                                idade = idade.toIntOrNull() ?: 0,
+                                idade = idade,
                                 descricao = descricao,
                                 status = status,
                                 animal = animal,
@@ -722,8 +721,7 @@ fun PostFormularioAlterar(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                }
             )
             Spacer(modifier = Modifier.height(Spacing.small))
             DropdownSelector(
