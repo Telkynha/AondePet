@@ -38,7 +38,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -112,6 +114,9 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
             }
         }
     }
+
+    val clipboardManager = LocalClipboardManager.current
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -310,7 +315,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         ) {
                             Text(
                                 text = "Animal: $animal",
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                style = MaterialTheme.typography.titleSmall.copy(
                                     lineHeight = 22.sp // Aumentando o espaçamento entre linhas
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface
@@ -318,7 +323,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Idade: $idade",
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                style = MaterialTheme.typography.titleSmall.copy(
                                     lineHeight = 22.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface
@@ -331,7 +336,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         ) {
                             Text(
                                 text = "Porte: $porte",
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                style = MaterialTheme.typography.titleSmall.copy(
                                     lineHeight = 22.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface
@@ -339,7 +344,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Raça: $raca",
-                                style = MaterialTheme.typography.titleMedium.copy(
+                                style = MaterialTheme.typography.titleSmall.copy(
                                     lineHeight = 22.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface
@@ -348,9 +353,6 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     }
                 }
             }
-
-
-
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -376,6 +378,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
+                    Spacer(modifier = Modifier.height(Spacing.small))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -420,25 +423,50 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically // Centralizar verticalmente
                     ) {
                         Text(
                             text = "Email: $email",
                             style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.weight(1f) // Ocupar espaço disponível
                         )
+                        IconButton(
+                            onClick = {
+                                clipboardManager.setText(AnnotatedString(email))
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.content_copy),
+                                contentDescription = "Copiar Email",
+                                modifier = Modifier.size(Spacing.medium)
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(Spacing.small))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically // Centralizar verticalmente
                     ) {
                         Text(
                             text = "Telefone: $telefone",
                             style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onBackground
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.weight(1f)
                         )
+                        IconButton(
+                            onClick = {
+                                clipboardManager.setText(AnnotatedString(telefone))
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.content_copy),
+                                contentDescription = "Copiar Telefone",
+                                modifier = Modifier.size(Spacing.medium)
+                            )
+                        }
                     }
-                    Spacer(modifier = Modifier.height(Spacing.small))
+                    Spacer(modifier = Modifier.height(Spacing.medium))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -449,7 +477,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             color = MaterialTheme.colorScheme.onBackground
                         )
                     }
-                    Spacer(modifier = Modifier.height(Spacing.small))
+                    Spacer(modifier = Modifier.height(Spacing.large))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
