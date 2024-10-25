@@ -306,8 +306,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                }
             )
             Spacer(modifier = Modifier.height(Spacing.small))
             DropdownSelector(
@@ -722,8 +721,7 @@ fun PostFormularioAlterar(
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                }
             )
             Spacer(modifier = Modifier.height(Spacing.small))
             DropdownSelector(
