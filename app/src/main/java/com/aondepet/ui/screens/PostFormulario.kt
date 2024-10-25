@@ -594,6 +594,9 @@ fun PostFormularioAlterar(
                         TextButton(
                             onClick = {
                                 viewModel.deletePet(petId!!)
+                                navController.clearBackStack("postFormularioAlterar/${petId}")
+                                navController.clearBackStack("principal")
+                                navController.navigate("principal")
                                 showDeleteDialog = false
                             }
                         ) {
