@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -116,6 +118,8 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
     }
 
     val clipboardManager = LocalClipboardManager.current
+
+    var showImageDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
@@ -216,6 +220,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         .aspectRatio(4 / 3f)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                        .clickable { showImageDialog = true } // Abre o dialog ao clicar
                 )
             } else {
                 Image(
@@ -228,6 +233,14 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         .aspectRatio(4 / 3f)
                         .clip(RoundedCornerShape(4.dp))
                         .border(2.dp, MaterialTheme.colorScheme.tertiary, RoundedCornerShape(4.dp))
+                        .clickable { showImageDialog = true } // Abre o dialog ao clicar
+                )
+            }
+
+            if (showImageDialog) {
+                FullScreenImageDialog(
+                    imageUri = petImage ?: Uri.EMPTY,
+                    onDismiss = { showImageDialog = false }
                 )
             }
 
@@ -491,5 +504,22 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                 } //Coluna para ajeitar contato
             } //Fim Surface de Contato
         } // Fim Column Principal
+    }
+}
+
+@Composable
+fun FullScreenImageDialog(imageUri: Uri, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Exibe a imagem em tela cheia
+            AsyncImage(
+                model = imageUri,
+                contentDescription = "Imagem em Tela Cheia",
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { onDismiss() } // Fecha o dialog ao clicar na imagem
+            )
+        }
     }
 }
