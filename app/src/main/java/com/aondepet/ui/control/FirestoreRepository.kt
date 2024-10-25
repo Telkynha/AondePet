@@ -1,11 +1,11 @@
+package com.aondepet.ui.control
+
 import android.net.Uri
 import androidx.core.net.toUri
 import com.aondepet.ui.models.Conta
 import com.aondepet.ui.models.Pet
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,10 +24,6 @@ class FirestoreRepository {
 
     fun addConta(contaId: String, conta: Conta): Task<Void> {
         return contasCollection.document(contaId).set(conta)
-    }
-
-    fun updateConta(contaId: String, updatedConta: Conta): Task<Void> {
-        return contasCollection.document(contaId).set(updatedConta)
     }
 
     fun deleteConta(contaId: String): Task<Void> {
@@ -90,7 +86,12 @@ class FirestoreRepository {
     }
 
     fun deletePet(petId: String): Task<Void> {
+        deleteImage(petId)
         return petsCollection.document(petId).delete()
+    }
+
+    fun getPetsByUserId(userId: String): Task<QuerySnapshot> {
+        return petsCollection.whereEqualTo("conta", userId).get()
     }
 
     fun getPetsByFilters(
@@ -161,6 +162,11 @@ class FirestoreRepository {
     fun getImageUrl(petId: String): Task<Uri> {
         val imageRef = storageRef.child("pets/${petId}")
         return imageRef.downloadUrl
+    }
+
+    private fun deleteImage(petId: String) {
+        val imageRef = storageRef.child("pets/${petId}")
+        imageRef.delete()
     }
 
 }

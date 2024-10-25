@@ -4,8 +4,11 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,10 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -56,7 +57,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.aondepet.R
@@ -73,6 +73,8 @@ import com.aondepet.ui.theme.Spacing
 @Composable
 fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
 
+    val statusOptions = listOf(Status.Adotar, Status.Perdido, Status.Outro)
+
     var nome by remember { mutableStateOf("") }
     var raca by remember { mutableStateOf("") }
     var genero by remember { mutableStateOf(Genero.Macho) }
@@ -80,10 +82,10 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
     var descricao by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
-    var status by remember { mutableStateOf(Status.Adotado) }
-    var animal by remember { mutableStateOf(Animal.Cachorro) }
+    var status by remember { mutableStateOf(Status.Adotar) }
+    var animal by remember { mutableStateOf(Animal.Gato) }
     var porte by remember { mutableStateOf(Porte.Medio) }
-    var estado by remember { mutableStateOf(Estado.AC) }
+    var estado by remember { mutableStateOf(Estado.SP) }
     var cidade by remember { mutableStateOf("") }
     val userId by viewModel.userId.observeAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
@@ -92,43 +94,96 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
             imageUri = uri
         }
 
+    var isVisible by remember { mutableStateOf(true) }
+
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Novo Pet",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.arrow_back),
-                            contentDescription = "Voltar",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { navController.navigate("conta") },
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.account_icon),
-                            contentDescription = "Icone menu",
+                            painter = painterResource(R.drawable.arrow_back),
+                            contentDescription = "Ícone voltar pagina anterior",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(Spacing.large)
                         )
                     }
-                },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = {
+                        if (userId != null) {
+                            val pet = Pet(
+                                nome = nome,
+                                raca = raca,
+                                genero = genero,
+                                idade = idade.toIntOrNull() ?: 0,
+                                descricao = descricao,
+                                status = status,
+                                animal = animal,
+                                porte = porte,
+                                email = email,
+                                telefone = telefone,
+                                estado = estado,
+                                cidade = cidade,
+                                conta = userId!!,
+                                foto = imageUri.toString()
+                            )
+
+                            viewModel.addPet(pet)
+                            navController.clearBackStack("postFormularioNovo")
+                            navController.clearBackStack("principal")
+                            navController.navigate("principal")
+                        }
+                    }) {
+                        Icon(
+                            painter = painterResource(R.drawable.add),
+                            contentDescription = "Ícone adicionar pet",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = { navController.navigate("conta") }) {
+                        Icon(
+                            painter = painterResource(R.drawable.account_icon),
+                            contentDescription = "Ícone conta",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         Column(
@@ -140,7 +195,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                 .verticalScroll(rememberScrollState()),
         ) {
             Text(
-                text = "Detalhes do pet:", style = MaterialTheme.typography.titleLarge,
+                text = "Post do pet:", style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(horizontal = Spacing.medium)
@@ -149,9 +204,32 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(Spacing.medium))
+            if (isVisible) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .clickable { isVisible = false },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Crie um Post para que os outros possam conhecer o seu pet!\n" +
+                                "Não se esqueça de colocar uma fotinha e escrever um pouco sobre ele!",
+                        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(Spacing.medium))
             DropdownSelector(
                 label = "Status",
-                options = Status.entries,
+                options = statusOptions,
                 selectedOption = status,
                 onOptionSelected = { status = it }
             )
@@ -272,7 +350,7 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                             unfocusedIndicatorColor = Color.Transparent,
                             disabledIndicatorColor = Color.Transparent,
                             errorIndicatorColor = Color.Transparent
-                        )
+                        ),
                     )
                 }
             }
@@ -346,38 +424,6 @@ fun PostFormularioNovo(navController: NavController, viewModel: PetViewModel) {
                         }
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(Spacing.small))
-            Button(
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                onClick = {
-                    if (userId != null) {
-                        val pet = Pet(
-                            nome = nome,
-                            raca = raca,
-                            genero = genero,
-                            idade = idade.toIntOrNull() ?: 0,
-                            descricao = descricao,
-                            status = status,
-                            animal = animal,
-                            porte = porte,
-                            email = email,
-                            telefone = telefone,
-                            estado = estado,
-                            cidade = cidade,
-                            conta = userId!!,
-                            foto = imageUri.toString()
-                        )
-
-                        viewModel.addPet(pet)
-                        navController.clearBackStack("postFormularioNovo")
-                        navController.clearBackStack("principal")
-                        navController.navigate("principal")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Adicionar", color = MaterialTheme.colorScheme.onPrimary)
             }
         }
     }
@@ -435,43 +481,99 @@ fun PostFormularioAlterar(
             }
         }
     }
+
+    var isVisible by remember { mutableStateOf(true) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Alterar Pet",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.arrow_back),
-                            contentDescription = "Voltar",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { navController.navigate("conta") },
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.account_icon),
-                            contentDescription = "Icone menu",
+                            painter = painterResource(R.drawable.arrow_back),
+                            contentDescription = "Ícone voltar pagina anterior",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(Spacing.large)
                         )
                     }
-                },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = {
+                        val pet = userId?.let {
+                            Pet(
+                                nome = nome,
+                                raca = raca,
+                                genero = genero,
+                                idade = idade.toIntOrNull() ?: 0,
+                                descricao = descricao,
+                                status = status,
+                                animal = animal,
+                                porte = porte,
+                                email = email,
+                                telefone = telefone,
+                                estado = estado,
+                                cidade = cidade,
+                                conta = it,
+                                foto = imageUri.toString(),
+                            )
+                        }
+                        if (pet != null) {
+                            viewModel.updatePet(petId!!, pet)
+                        }
+                        navController.clearBackStack("postFormularioAlterar/${petId}")
+                        navController.clearBackStack("principal")
+                        navController.navigate("principal")
+                    }) {
+                        Icon(
+                            painter = painterResource(R.drawable.edit),
+                            contentDescription = "Ícone Alterar Post",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.errorContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = { showDeleteDialog = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.delete),
+                            contentDescription = "Ícone excluir post",
+                            tint = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         Column(
@@ -482,8 +584,35 @@ fun PostFormularioAlterar(
                 .padding(Spacing.large)
                 .verticalScroll(rememberScrollState()),
         ) {
+
+            if (showDeleteDialog) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = false },
+                    title = { Text("Deletar Post") },
+                    text = { Text("Tem certeza de que deseja excluir esse post?\nEsta ação não pode ser desfeita.") },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                viewModel.deletePet(petId!!)
+                                navController.clearBackStack("postFormularioAlterar/${petId}")
+                                navController.clearBackStack("principal")
+                                navController.navigate("principal")
+                                showDeleteDialog = false
+                            }
+                        ) {
+                            Text("Excluir")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = false }) {
+                            Text("Cancelar")
+                        }
+                    }
+                )
+            }
+
             Text(
-                text = "Detalhes do pet:", style = MaterialTheme.typography.titleLarge,
+                text = "Alterar o Post do pet:", style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .padding(horizontal = Spacing.medium)
@@ -491,6 +620,28 @@ fun PostFormularioAlterar(
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
+            Spacer(modifier = Modifier.height(Spacing.medium))
+            if (isVisible) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.secondaryContainer)
+                        .clickable { isVisible = false },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Alterar o seu Post é simples!\nLembre-se de manter seu status em dia!",
+                        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(Spacing.medium))
             DropdownSelector(
                 label = "Status",
@@ -689,56 +840,6 @@ fun PostFormularioAlterar(
                         }
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(Spacing.small))
-            Button(
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                onClick = {
-                    val pet = userId?.let {
-                        Pet(
-                            nome = nome,
-                            raca = raca,
-                            genero = genero,
-                            idade = idade.toIntOrNull() ?: 0,
-                            descricao = descricao,
-                            status = status,
-                            animal = animal,
-                            porte = porte,
-                            email = email,
-                            telefone = telefone,
-                            estado = estado,
-                            cidade = cidade,
-                            conta = it,
-                            foto = imageUri.toString(),
-                        )
-                    }
-                    if (pet != null) {
-                        viewModel.updatePet(petId!!, pet)
-                    }
-                    navController.clearBackStack("postFormularioAlterar/${petId}")
-                    navController.clearBackStack("principal")
-                    navController.navigate("principal")
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Alterar", color = MaterialTheme.colorScheme.onPrimary)
-            }
-            Button(
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError,
-                    disabledContainerColor = MaterialTheme.colorScheme.errorContainer,
-                    disabledContentColor = MaterialTheme.colorScheme.onErrorContainer
-                ),
-                onClick = {
-                    viewModel.deletePet(petId!!)
-                    navController.navigate("principal") {
-                        popUpTo("postFormularioAlterar") { inclusive = true }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(text = "Excluir")
             }
         }
     }

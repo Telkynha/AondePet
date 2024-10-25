@@ -2,8 +2,10 @@ package com.aondepet.ui.screens
 
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,18 +13,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -58,9 +54,7 @@ import com.aondepet.ui.models.Pet
 import com.aondepet.ui.models.Porte
 import com.aondepet.ui.models.Status
 import com.aondepet.ui.theme.Spacing
-import java.net.URI
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Post(navController: NavController, viewModel: PetViewModel, petId: String? = "") {
 
@@ -118,42 +112,62 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
         }
     }
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Pet",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                navigationIcon = {
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            painter = painterResource(id = R.drawable.arrow_back),
-                            contentDescription = "Voltar",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = { navController.navigate("conta") },
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.account_icon),
-                            contentDescription = "Icone menu",
+                            painter = painterResource(R.drawable.arrow_back),
+                            contentDescription = "Ícone voltar pagina anterior",
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(Spacing.large)
                         )
                     }
-                },
-                colors = androidx.compose.material3.TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            )
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f) // Peso 1
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // Box vazia, ocupa espaço
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = { navController.navigate("conta") }) {
+                        Icon(
+                            painter = painterResource(R.drawable.account_icon),
+                            contentDescription = "Ícone conta",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(Spacing.large)
+                        )
+                    }
+                }
+            }
         }
     ) { paddingValues ->
         // Conteúdo da tela
@@ -173,7 +187,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
 
             ) {
                 Text(
-                    text = "$nome",
+                    text = nome,
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -301,13 +315,18 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Raça: $raca",
+                                text = "Idade: $idade anos",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     lineHeight = 22.sp
                                 ),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                        Column(
+                            modifier = Modifier
+                                .weight(1f),
+                            horizontalAlignment = Alignment.Start
+                        ) {
                             Text(
                                 text = "Porte: $porte",
                                 style = MaterialTheme.typography.titleMedium.copy(
@@ -317,7 +336,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Idade: $idade anos",
+                                text = "Raça: $raca",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     lineHeight = 22.sp
                                 ),
@@ -361,7 +380,7 @@ fun Post(navController: NavController, viewModel: PetViewModel, petId: String? =
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "$descricao",
+                            text = descricao,
                             textAlign = TextAlign.Justify,
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.onBackground

@@ -15,14 +15,14 @@ fun PetNavigation(petViewModel: PetViewModel) {
         composable("login") { Login(navController, petViewModel) }
         composable("cadastro") { Cadastro(navController, petViewModel) }
         composable("post/{petId}") { backStackEntry ->
-            var petId = backStackEntry.arguments?.getString("petId")
+            val petId = backStackEntry.arguments?.getString("petId")
             Post(navController, petViewModel, petId)
         }
         composable("postFormularioNovo") {
             PostFormularioNovo(navController, petViewModel)
         }
         composable("postFormularioAlterar/{petId}") { backStackEntry ->
-            var petId = backStackEntry.arguments?.getString("petId")
+            val petId = backStackEntry.arguments?.getString("petId")
             PostFormularioAlterar(navController, petViewModel, petId)
         }
         composable("conta") { Conta(navController, petViewModel) }

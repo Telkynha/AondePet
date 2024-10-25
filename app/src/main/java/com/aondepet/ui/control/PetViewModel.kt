@@ -1,9 +1,6 @@
 package com.aondepet.ui.control
 
-import FirestoreRepository
 import android.net.Uri
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,10 +27,8 @@ class PetViewModel : ViewModel() {
     val userId: LiveData<String?> get() = _userId
 
     private val _petData = MutableLiveData<Pet>()
-    val petData: LiveData<Pet> get() = _petData
 
     private val _pets = MutableLiveData<List<Pet>>()
-    val pets: LiveData<List<Pet>> get() = _pets
 
     private val _petsList = MutableLiveData<List<Pet>>() // Lista para os pets filtrados
     val petsList: LiveData<List<Pet>> get() = _petsList
@@ -41,14 +36,12 @@ class PetViewModel : ViewModel() {
     private val _favoritos = MutableLiveData<List<String>>() // Lista de IDs dos pets favoritos
     val favoritos: LiveData<List<String>> get() = _favoritos
 
-    private val _mostrarFavoritos = MutableLiveData<Boolean>(false)
+    private val _mostrarFavoritos = MutableLiveData(false)
     val mostrarFavoritos: LiveData<Boolean> get() = _mostrarFavoritos
 
-    private val _mostrarMeusPets = MutableLiveData<Boolean>(false)
-    val mostrarMeusPets: LiveData<Boolean> get() = _mostrarMeusPets
+    private val _mostrarMeusPets = MutableLiveData(false)
 
     private val _errorMessage = MutableLiveData<String>()
-    val errorMessage: LiveData<String> get() = _errorMessage
 
     init {
         checkAuthState()
@@ -59,7 +52,7 @@ class PetViewModel : ViewModel() {
 
     // ========== METODOS - AUTENTICAÇÃO LOGIN/REGISTRO ==========
 
-    fun checkAuthState() {
+    private fun checkAuthState() {
         if (authRepository.checkAuthState()) {
             _authState.value = AuthState.Authenticated
             _userId.value = authRepository.currentUserId
@@ -71,14 +64,6 @@ class PetViewModel : ViewModel() {
     }
 
     // ========== METODOS - AUTENTICAÇÃO LOGIN/REGISTRO ==========
-
-    fun setUserId(id: String?) {
-        _userId.value = id
-    }
-
-    fun clearUserId() {
-        _userId.value = null
-    }
 
     fun login(email: String, senha: String) {
         _authState.value = AuthState.Loading
@@ -118,15 +103,35 @@ class PetViewModel : ViewModel() {
 
     // ========== METODOS - CONTA ==========
 
-    fun addConta(contaId: String, conta: Conta) {
+    private fun addConta(contaId: String, conta: Conta) {
         firestoreRepository.addConta(contaId, conta)
     }
 
     fun deleteConta() {
-        _userId.value?.let {
-            firestoreRepository.deleteConta(it)
+        _userId.value?.let { userId ->
+            firestoreRepository.getPetsByUserId(userId)
+                .addOnSuccessListener { querySnapshot ->
+                    val meusPets = querySnapshot.toObjects(Pet::class.java)
+                    meusPets.forEach { pet ->
+                        firestoreRepository.deletePet(pet.id)
+                    }
+                    firestoreRepository.deleteConta(userId)
+                        .addOnSuccessListener {
+                            authRepository.deletarContaByid()
+                        }
+                        .addOnFailureListener { e ->
+                            _errorMessage.value = "Erro ao deletar a conta: ${e.message}"
+                        }
+                }
+                .addOnFailureListener { e ->
+                    _errorMessage.value = "Erro ao buscar os pets do usuário: ${e.message}"
+                }
+        } ?: run {
+            _errorMessage.value = "Usuário não autenticado"
         }
     }
+
+
 
     fun getContaById(): Task<DocumentSnapshot> {
         return _userId.value?.let {
@@ -134,7 +139,7 @@ class PetViewModel : ViewModel() {
         } ?: throw IllegalStateException("UserId vazio")
     }
 
-    fun getFavoritos(contaId: String): Task<List<String>> {
+    private fun getFavoritos(contaId: String): Task<List<String>> {
         return firestoreRepository.getFavoritos(contaId)
     }
 
@@ -200,7 +205,7 @@ class PetViewModel : ViewModel() {
         }
     }
 
-    fun loadFavoritos() {
+    private fun loadFavoritos() {
         _userId.value?.let { contaId ->
             firestoreRepository.getFavoritos(contaId)
                 .addOnSuccessListener { favoritosIds ->
@@ -223,7 +228,7 @@ class PetViewModel : ViewModel() {
 
     fun addPet(pet: Pet) {
         firestoreRepository.addPet(pet)
-            .addOnSuccessListener { documentReference ->
+            .addOnSuccessListener {
                 fetchPets()
             }
             .addOnFailureListener { e ->
@@ -231,7 +236,7 @@ class PetViewModel : ViewModel() {
             }
     }
 
-    fun fetchPets() {
+    private fun fetchPets() {
         firestoreRepository.getPets()
             .addOnSuccessListener { querySnapshot ->
                 val petList = querySnapshot.toObjects(Pet::class.java)
@@ -310,7 +315,7 @@ class PetViewModel : ViewModel() {
     }
 
 
-    fun uploadImage(imageUri: Uri, petId: String) {
+    private fun uploadImage(imageUri: Uri, petId: String) {
         firestoreRepository.uploadImage(imageUri, petId)
     }
 
@@ -329,8 +334,8 @@ class PetViewModel : ViewModel() {
 }
 
 sealed class AuthState{
-    object Authenticated: AuthState()
-    object Unauthenticated: AuthState()
-    object Loading: AuthState()
+    data object Authenticated: AuthState()
+    data object Unauthenticated: AuthState()
+    data object Loading: AuthState()
     data class Error(val message: String): AuthState()
 }
