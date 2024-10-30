@@ -60,6 +60,7 @@ fun Principal(navController: NavController, viewModel: PetViewModel) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .navigationBarsPadding()
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
